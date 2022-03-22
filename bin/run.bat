@@ -1,7 +1,10 @@
 @echo off
 echo.
-echo [信息] 使用Jar命令运行Web工程。
+echo Run the web project using the Jar command
 echo.
+
+rem set JAVA_HOME=C:\pleiades\java\8
+set path=%path%;C:\pleiades\java\8\bin
 
 cd %~dp0
 cd ../ruoyi-admin/target

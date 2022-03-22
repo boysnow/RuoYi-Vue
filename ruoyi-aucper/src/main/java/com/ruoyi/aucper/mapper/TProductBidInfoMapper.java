@@ -7,7 +7,7 @@ import com.ruoyi.aucper.domain.TProductBidInfo;
  * 商品入札情報Mapper接口
  * 
  * @author ruoyi
- * @date 2022-03-05
+ * @date 2022-03-16
  */
 public interface TProductBidInfoMapper 
 {

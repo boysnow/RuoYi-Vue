@@ -1,7 +1,9 @@
 @echo off
 echo.
-echo [信息] 打包Web工程，生成war/jar包文件。
+echo packaging war/jar
 echo.
+
+set JAVA_HOME=C:\pleiades\java\8
 
 %~d0
 cd %~dp0

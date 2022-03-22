@@ -1,6 +1,6 @@
 @echo off
 echo.
-echo [信息] 使用 Vue CLI 命令运行 Web 工程。
+echo Run the web project using the Vue CLI command
 echo.
 
 %~d0

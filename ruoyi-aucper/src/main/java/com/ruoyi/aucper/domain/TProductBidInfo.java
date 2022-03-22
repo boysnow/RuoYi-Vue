@@ -11,7 +11,7 @@ import com.ruoyi.common.core.domain.BaseEntity;
  * 商品入札情報对象 T_PRODUCT_BID_INFO
  * 
  * @author ruoyi
- * @date 2022-03-05
+ * @date 2022-03-16
  */
 public class TProductBidInfo extends BaseEntity
 {
