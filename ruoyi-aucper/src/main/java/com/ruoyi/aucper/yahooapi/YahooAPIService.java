@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -14,24 +15,60 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
+import com.ruoyi.aucper.config.YahooAuctionConifg;
+import com.ruoyi.aucper.domain.TProductBidInfo;
+import com.ruoyi.aucper.mapper.TProductBidInfoMapper;
 import com.ruoyi.aucper.yahooapi.dto.ExhibitInfoDTO;
 import com.ruoyi.aucper.yahooapi.dto.ExhibitInfoDTO.BID_STATUS;
 
+@Service
 public class YahooAPIService {
+
+    private static final Logger logger = LoggerFactory.getLogger(YahooAPIService.class);
+
+    @Autowired
+    private YahooAuctionConifg config;
+
+    @Autowired
+    private TProductBidInfoMapper tProductBidInfoMapper;
 
 	// 開始・終了時間
 	private static final String FMT_DATE_JSON = "yyyy-MM-dd HH:mm:ss";
 	private static final String FMT_DATE_HTML = "yyyy.MM.dd（E）HH:mm";
 
+	static {
+		System.setProperty("selenide.headless", "true");
+	}
+
+	public void updateExhibitInfo() {
+
+		TProductBidInfo cond = new TProductBidInfo();
+		List<TProductBidInfo> list = tProductBidInfoMapper.selectTProductBidInfoList(null);
+		if (list.size() == 0) {
+			return;
+		}
+
+		for (TProductBidInfo info : list) {
+			this.getExhibitInfoById(info.getProductCode());
+		}
+
+	}
+
 	public ExhibitInfoDTO getExhibitInfoById(String id) {
+
+		logger.info("@@@@@@@@ Get exhibit info by [" + id + "] - START");
 
 		String baseurl = "https://page.auctions.yahoo.co.jp/jp/auction/";
 
-
+//		open(config.getBaseUrl() + id);
 		open(baseurl + id);
 
 		ExhibitInfoDTO exhibitInfoDTO = new ExhibitInfoDTO();
@@ -83,6 +120,8 @@ public class YahooAPIService {
 //			existJson = false;
 //		}
 
+
+
 		// JSONより取得できなかった場合、スクレイピングする
 		existJson = false;
 		if (!existJson) {
@@ -109,7 +148,7 @@ public class YahooAPIService {
 			System.out.println("starttime=" + starttime);
 			if (StringUtils.isNotEmpty(starttime)) {
 				try {
-					exhibitInfoDTO.setEndDate(DateUtils.parseDate(starttime, FMT_DATE_HTML));
+					exhibitInfoDTO.setStartDate(DateUtils.parseDate(starttime, FMT_DATE_HTML));
 				} catch (ParseException e) {
 					e.printStackTrace();
 				}
@@ -160,8 +199,6 @@ public class YahooAPIService {
 		System.out.println(element);
 
 
-
-
 		// 出品者のID
 		exhibitInfoDTO.setSellerId($(".Seller__name a").text());
 		// 出品者の評価ポイント
@@ -180,7 +217,47 @@ public class YahooAPIService {
 		System.out.println(exhibitInfoDTO.toString());
 
 
+//		this.updateTProductBidInfo(exhibitInfoDTO);
+
+		logger.info("@@@@@@@@ Get exhibit info by [" + id + "] - END");
+
 		return null;
+	}
+
+	private void updateTProductBidInfo(ExhibitInfoDTO exhibitInfoDTO) {
+
+		// 存在チェック
+		TProductBidInfo conditions = new TProductBidInfo();
+		conditions.setProductCode(exhibitInfoDTO.getAuctionID());
+		List<TProductBidInfo> list = tProductBidInfoMapper.selectTProductBidInfoList(conditions);
+		TProductBidInfo bidInfo = null;
+		if (list.size() != 0) {
+			bidInfo = list.get(0);
+		} else {
+			bidInfo = new TProductBidInfo();
+			bidInfo.setProductCode(exhibitInfoDTO.getAuctionID());
+		}
+
+//		bidInfo.setProductCode(exhibitInfoDTO.getAuctionID());
+		bidInfo.setProductTitle(exhibitInfoDTO.getTitle());
+		bidInfo.setNowPrice(exhibitInfoDTO.getPrice());
+		bidInfo.setOnholdPrice(exhibitInfoDTO.getInsideBidorbuy());
+//		bidInfo.setBidStartDate(exhibitInfoDTO.get);
+		bidInfo.setBidEndDate(exhibitInfoDTO.getEndDate());
+		bidInfo.setBidLastUser(exhibitInfoDTO.getHighestBiddersBidderId());
+		bidInfo.setTrusteeshipUser1(null);
+		bidInfo.setTrusteeshipUser2(null);
+		bidInfo.setBidUserCount(exhibitInfoDTO.getBids());
+		if (exhibitInfoDTO.getLeftTime() != null) {
+			bidInfo.setRemainingTime(exhibitInfoDTO.getLeftTime().longValue());
+		}
+		bidInfo.setRemainingTimeUnit(exhibitInfoDTO.getLeftTimeUnit());
+
+		if (bidInfo.getId() == null || bidInfo.getId() == 0) {
+			tProductBidInfoMapper.insertTProductBidInfo(bidInfo);
+		} else {
+			tProductBidInfoMapper.updateTProductBidInfo(bidInfo);
+		}
 	}
 
 
@@ -188,8 +265,8 @@ public class YahooAPIService {
 		YahooAPIService service = new YahooAPIService();
 		System.out.println("begin");
 //		service.getExhibitInfoById("h1030142899");
-//		service.getExhibitInfoById("k1037411730");
-		service.getExhibitInfoById("x1038482511");
+//		service.getExhibitInfoById("f1031551276");
+		service.getExhibitInfoById("c1048299050");
 		System.out.println("end");
 	}
 

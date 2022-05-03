@@ -22,12 +22,58 @@
             <groupId>com.ruoyi</groupId>
             <artifactId>ruoyi-common</artifactId>
         </dependency>
+
         <dependency>
 		    <groupId>com.codeborne</groupId>
 		    <artifactId>selenide</artifactId>
-		    <version>6.3.0</version>
+<!-- 		    <version>6.3.5</version> -->
+		    <version>5.25.1</version>
 		</dependency>
 
+			<dependency>
+			  <groupId>org.seleniumhq.selenium</groupId>
+			  <artifactId>selenium-api</artifactId>
+			</dependency>
+			<dependency>
+			  <groupId>org.seleniumhq.selenium</groupId>
+			  <artifactId>selenium-chrome-driver</artifactId>
+			</dependency>
+			<dependency>
+			  <groupId>org.seleniumhq.selenium</groupId>
+			  <artifactId>selenium-edge-driver</artifactId>
+			</dependency>
+			<dependency>
+			  <groupId>org.seleniumhq.selenium</groupId>
+			  <artifactId>selenium-firefox-driver</artifactId>
+			</dependency>
+			<dependency>
+			  <groupId>org.seleniumhq.selenium</groupId>
+			  <artifactId>selenium-ie-driver</artifactId>
+			</dependency>
+			<dependency>
+			  <groupId>org.seleniumhq.selenium</groupId>
+			  <artifactId>selenium-java</artifactId>
+			</dependency>
+			<dependency>
+			  <groupId>org.seleniumhq.selenium</groupId>
+			  <artifactId>selenium-opera-driver</artifactId>
+			</dependency>
+			<dependency>
+			  <groupId>org.seleniumhq.selenium</groupId>
+			  <artifactId>selenium-remote-driver</artifactId>
+			</dependency>
+			<dependency>
+			  <groupId>org.seleniumhq.selenium</groupId>
+			  <artifactId>selenium-safari-driver</artifactId>
+			</dependency>
+			<dependency>
+			  <groupId>org.seleniumhq.selenium</groupId>
+			  <artifactId>selenium-support</artifactId>
+			</dependency>
+			<dependency>
+			    <groupId>org.seleniumhq.selenium</groupId>
+			    <artifactId>selenium-server</artifactId>
+			</dependency>
     </dependencies>
 
 </project>

@@ -37,6 +37,12 @@ public class ExhibitInfoDTO {
     /** 最高額入札者の評価ポイント */
     private Integer highestBiddersBidderRatingPoint;
 
+    /** 出品開始日時 */
+    private Date startDate;
+
+    /** 出品開始時刻 */
+    private String startTime;
+
     /** 出品終了日時 */
     private Date endDate;
 
@@ -49,7 +55,7 @@ public class ExhibitInfoDTO {
     /** 残り時間単位 */
     private String leftTimeUnit;
 
-    /** 商品（オークション）の状態（open ：出品中、closed ：終了、cancelled ：オークションの取り消し） */
+    /** 商品（オークション）の状態（open ：1/出品中、closed ：2/終了、cancelled ：3/オークションの取り消し） */
     private String status;
 
     public enum BID_STATUS {
@@ -147,8 +153,8 @@ public class ExhibitInfoDTO {
         sb.append("入札数:").append(this.bids).append(LineSeparator.WINDOWS.value());
         sb.append("最高額入札者ID:").append(this.highestBiddersBidderId).append(LineSeparator.WINDOWS.value());
         sb.append("最高額入札者の評価:").append(this.highestBiddersBidderRatingPoint).append(LineSeparator.WINDOWS.value());
-        sb.append("開始日時:").append(this.endDate).append(LineSeparator.WINDOWS.value());
-        sb.append("終了予定日時:").append(this.endDate).append(LineSeparator.WINDOWS.value());
+        sb.append("出品開始日時:").append(this.startDate).append(LineSeparator.WINDOWS.value());
+        sb.append("出品終了日時:").append(this.endDate).append(LineSeparator.WINDOWS.value());
         sb.append("残り時間:").append(this.leftTime).append(LineSeparator.WINDOWS.value());
         sb.append("残り時間単位:").append(this.leftTimeUnit).append(LineSeparator.WINDOWS.value());
         sb.append("商品状態:").append(this.status).append(LineSeparator.WINDOWS.value());
@@ -296,6 +302,21 @@ public class ExhibitInfoDTO {
         this.highestBiddersBidderRatingPoint = highestBiddersBidderRatingPoint;
     }
 
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public String getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(String startTime) {
+		this.startTime = startTime;
+	}
 
     /**
      * @return endDate

@@ -1,15 +1,18 @@
 package com.ruoyi.aucper.domain;
 
+import java.math.BigDecimal;
 import java.util.Date;
-import com.fasterxml.jackson.annotation.JsonFormat;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 
 /**
  * 商品入札情報对象 T_PRODUCT_BID_INFO
- * 
+ *
  * @author ruoyi
  * @date 2022-03-16
  */
@@ -30,11 +33,11 @@ public class TProductBidInfo extends BaseEntity
 
     /** 現在価格 */
     @Excel(name = "現在価格")
-    private Long nowPrice;
+    private BigDecimal nowPrice;
 
     /** 保留価格 */
     @Excel(name = "保留価格")
-    private Long onholdPrice;
+    private BigDecimal onholdPrice;
 
     /** 入札カウントダウン */
     private Integer bidCountdown;
@@ -111,237 +114,237 @@ public class TProductBidInfo extends BaseEntity
     /** 更新日時 */
     private Date updateDatetime;
 
-    public void setId(Integer id) 
+    public void setId(Integer id)
     {
         this.id = id;
     }
 
-    public Integer getId() 
+    public Integer getId()
     {
         return id;
     }
-    public void setProductCode(String productCode) 
+    public void setProductCode(String productCode)
     {
         this.productCode = productCode;
     }
 
-    public String getProductCode() 
+    public String getProductCode()
     {
         return productCode;
     }
-    public void setProductTitle(String productTitle) 
+    public void setProductTitle(String productTitle)
     {
         this.productTitle = productTitle;
     }
 
-    public String getProductTitle() 
+    public String getProductTitle()
     {
         return productTitle;
     }
-    public void setNowPrice(Long nowPrice) 
+    public void setNowPrice(BigDecimal nowPrice)
     {
         this.nowPrice = nowPrice;
     }
 
-    public Long getNowPrice() 
+    public BigDecimal getNowPrice()
     {
         return nowPrice;
     }
-    public void setOnholdPrice(Long onholdPrice) 
+    public void setOnholdPrice(BigDecimal onholdPrice)
     {
         this.onholdPrice = onholdPrice;
     }
 
-    public Long getOnholdPrice() 
+    public BigDecimal getOnholdPrice()
     {
         return onholdPrice;
     }
-    public void setBidCountdown(Integer bidCountdown) 
+    public void setBidCountdown(Integer bidCountdown)
     {
         this.bidCountdown = bidCountdown;
     }
 
-    public Integer getBidCountdown() 
+    public Integer getBidCountdown()
     {
         return bidCountdown;
     }
-    public void setBidStartDate(Date bidStartDate) 
+    public void setBidStartDate(Date bidStartDate)
     {
         this.bidStartDate = bidStartDate;
     }
 
-    public Date getBidStartDate() 
+    public Date getBidStartDate()
     {
         return bidStartDate;
     }
-    public void setBidEndDate(Date bidEndDate) 
+    public void setBidEndDate(Date bidEndDate)
     {
         this.bidEndDate = bidEndDate;
     }
 
-    public Date getBidEndDate() 
+    public Date getBidEndDate()
     {
         return bidEndDate;
     }
-    public void setBidLastUser(String bidLastUser) 
+    public void setBidLastUser(String bidLastUser)
     {
         this.bidLastUser = bidLastUser;
     }
 
-    public String getBidLastUser() 
+    public String getBidLastUser()
     {
         return bidLastUser;
     }
-    public void setTrusteeshipUser1(String trusteeshipUser1) 
+    public void setTrusteeshipUser1(String trusteeshipUser1)
     {
         this.trusteeshipUser1 = trusteeshipUser1;
     }
 
-    public String getTrusteeshipUser1() 
+    public String getTrusteeshipUser1()
     {
         return trusteeshipUser1;
     }
-    public void setTrusteeshipUser2(String trusteeshipUser2) 
+    public void setTrusteeshipUser2(String trusteeshipUser2)
     {
         this.trusteeshipUser2 = trusteeshipUser2;
     }
 
-    public String getTrusteeshipUser2() 
+    public String getTrusteeshipUser2()
     {
         return trusteeshipUser2;
     }
-    public void setBidUserCount(Integer bidUserCount) 
+    public void setBidUserCount(Integer bidUserCount)
     {
         this.bidUserCount = bidUserCount;
     }
 
-    public Integer getBidUserCount() 
+    public Integer getBidUserCount()
     {
         return bidUserCount;
     }
-    public void setRemainingTime(Long remainingTime) 
+    public void setRemainingTime(Long remainingTime)
     {
         this.remainingTime = remainingTime;
     }
 
-    public Long getRemainingTime() 
+    public Long getRemainingTime()
     {
         return remainingTime;
     }
-    public void setBidClosingTask(String bidClosingTask) 
+    public void setBidClosingTask(String bidClosingTask)
     {
         this.bidClosingTask = bidClosingTask;
     }
 
-    public String getBidClosingTask() 
+    public String getBidClosingTask()
     {
         return bidClosingTask;
     }
-    public void setBidPriceTask(String bidPriceTask) 
+    public void setBidPriceTask(String bidPriceTask)
     {
         this.bidPriceTask = bidPriceTask;
     }
 
-    public String getBidPriceTask() 
+    public String getBidPriceTask()
     {
         return bidPriceTask;
     }
-    public void setBidTask(String bidTask) 
+    public void setBidTask(String bidTask)
     {
         this.bidTask = bidTask;
     }
 
-    public String getBidTask() 
+    public String getBidTask()
     {
         return bidTask;
     }
-    public void setBidStatus(String bidStatus) 
+    public void setBidStatus(String bidStatus)
     {
         this.bidStatus = bidStatus;
     }
 
-    public String getBidStatus() 
+    public String getBidStatus()
     {
         return bidStatus;
     }
-    public void setTaskStatus(String taskStatus) 
+    public void setTaskStatus(String taskStatus)
     {
         this.taskStatus = taskStatus;
     }
 
-    public String getTaskStatus() 
+    public String getTaskStatus()
     {
         return taskStatus;
     }
-    public void setRemainingTimeUnit(String remainingTimeUnit) 
+    public void setRemainingTimeUnit(String remainingTimeUnit)
     {
         this.remainingTimeUnit = remainingTimeUnit;
     }
 
-    public String getRemainingTimeUnit() 
+    public String getRemainingTimeUnit()
     {
         return remainingTimeUnit;
     }
-    public void setRealTimeStatus(String realTimeStatus) 
+    public void setRealTimeStatus(String realTimeStatus)
     {
         this.realTimeStatus = realTimeStatus;
     }
 
-    public String getRealTimeStatus() 
+    public String getRealTimeStatus()
     {
         return realTimeStatus;
     }
-    public void setDeleteFlag(Integer deleteFlag) 
+    public void setDeleteFlag(Integer deleteFlag)
     {
         this.deleteFlag = deleteFlag;
     }
 
-    public Integer getDeleteFlag() 
+    public Integer getDeleteFlag()
     {
         return deleteFlag;
     }
-    public void setUpdateCount(Long updateCount) 
+    public void setUpdateCount(Long updateCount)
     {
         this.updateCount = updateCount;
     }
 
-    public Long getUpdateCount() 
+    public Long getUpdateCount()
     {
         return updateCount;
     }
-    public void setCreateUser(String createUser) 
+    public void setCreateUser(String createUser)
     {
         this.createUser = createUser;
     }
 
-    public String getCreateUser() 
+    public String getCreateUser()
     {
         return createUser;
     }
-    public void setCreateDatetime(Date createDatetime) 
+    public void setCreateDatetime(Date createDatetime)
     {
         this.createDatetime = createDatetime;
     }
 
-    public Date getCreateDatetime() 
+    public Date getCreateDatetime()
     {
         return createDatetime;
     }
-    public void setUpdateUser(String updateUser) 
+    public void setUpdateUser(String updateUser)
     {
         this.updateUser = updateUser;
     }
 
-    public String getUpdateUser() 
+    public String getUpdateUser()
     {
         return updateUser;
     }
-    public void setUpdateDatetime(Date updateDatetime) 
+    public void setUpdateDatetime(Date updateDatetime)
     {
         this.updateDatetime = updateDatetime;
     }
 
-    public Date getUpdateDatetime() 
+    public Date getUpdateDatetime()
     {
         return updateDatetime;
     }

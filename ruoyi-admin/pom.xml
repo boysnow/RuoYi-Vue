@@ -64,7 +64,6 @@
         <dependency>
             <groupId>com.ruoyi</groupId>
             <artifactId>ruoyi-aucper</artifactId>
-            <version>3.8.1</version>
         </dependency>
 
     </dependencies>
