@@ -9,6 +9,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Scope;
 
 @Configuration
@@ -24,7 +25,7 @@ public class BrowserPoolConfig {
 //        WebDriver driver = new RemoteWebDriver(remoteURL, capabilities);
 
         ChromeOptions chromeOptions = new ChromeOptions();
-//        chromeOptions.addArguments("--headless");
+        chromeOptions.addArguments("--headless");
 //        chromeOptions.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, UnexpectedAlertBehaviour.IGNORE);
 
         WebDriver driver = new RemoteWebDriver(remoteURL, chromeOptions);
@@ -33,6 +34,7 @@ public class BrowserPoolConfig {
     }
 
     @Bean(name = "poolTargetSourceWebDriver", initMethod = "initializeObjects")
+    @DependsOn("seleneConifg")
     WebDriverObjectPool makeWebDriverPool() {
         WebDriverObjectPool pool = new WebDriverObjectPool();
         pool.setMaxSize(5);

@@ -3,7 +3,7 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.aucper.mapper.TProductBidInfoMapper">
-    
+
     <resultMap type="TProductBidInfo" id="TProductBidInfoResult">
         <result property="id"    column="ID"    />
         <result property="productCode"    column="PRODUCT_CODE"    />
@@ -39,7 +39,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectTProductBidInfoList" parameterType="TProductBidInfo" resultMap="TProductBidInfoResult">
         <include refid="selectTProductBidInfoVo"/>
-        <where>  
+        <where>
             <if test="productCode != null  and productCode != ''"> and PRODUCT_CODE = #{productCode}</if>
             <if test="productTitle != null  and productTitle != ''"> and PRODUCT_TITLE like concat('%', #{productTitle}, '%')</if>
             <if test="nowPrice != null "> and NOW_PRICE &gt;= #{nowPrice}</if>
@@ -47,14 +47,29 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="bidStatus != null  and bidStatus != ''"> and BID_STATUS = #{bidStatus}</if>
             <if test="taskStatus != null  and taskStatus != ''"> and TASK_STATUS = #{taskStatus}</if>
             <if test="realTimeStatus != null  and realTimeStatus != ''"> and REAL_TIME_STATUS = #{realTimeStatus}</if>
+            <if test="deleteFlag != null "> and DELETE_FLAG = #{deleteFlag}</if>
         </where>
     </select>
-    
+
+    <select id="selectOpeningBidList" parameterType="TProductBidInfo" resultMap="TProductBidInfoResult">
+        <include refid="selectTProductBidInfoVo"/>
+        <where>
+            <if test="productCode != null  and productCode != ''"> and PRODUCT_CODE = #{productCode}</if>
+            <if test="productTitle != null  and productTitle != ''"> and PRODUCT_TITLE like concat('%', #{productTitle}, '%')</if>
+            <if test="nowPrice != null "> and NOW_PRICE &gt;= #{nowPrice}</if>
+            <if test="bidEndDate != null "> and BID_END_DATE &lt;= #{bidEndDate}</if>
+            <if test="bidStatus != null  and bidStatus != ''"> and (BID_STATUS is null or BID_STATUS <![CDATA[ <> ]]> #{bidStatus})</if>
+            <if test="taskStatus != null  and taskStatus != ''"> and TASK_STATUS = #{taskStatus}</if>
+            <if test="realTimeStatus != null  and realTimeStatus != ''"> and REAL_TIME_STATUS = #{realTimeStatus}</if>
+            <if test="deleteFlag != null "> and DELETE_FLAG = #{deleteFlag}</if>
+        </where>
+    </select>
+
     <select id="selectTProductBidInfoById" parameterType="Integer" resultMap="TProductBidInfoResult">
         <include refid="selectTProductBidInfoVo"/>
         where ID = #{id}
     </select>
-        
+
     <insert id="insertTProductBidInfo" parameterType="TProductBidInfo" useGeneratedKeys="true" keyProperty="id">
         insert into T_PRODUCT_BID_INFO
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -150,7 +165,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <delete id="deleteTProductBidInfoByIds" parameterType="String">
-        delete from T_PRODUCT_BID_INFO where ID in 
+        delete from T_PRODUCT_BID_INFO where ID in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>

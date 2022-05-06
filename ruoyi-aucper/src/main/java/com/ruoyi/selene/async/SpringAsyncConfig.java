@@ -27,12 +27,12 @@ public class SpringAsyncConfig implements AsyncConfigurer {
     }
 
     @Bean
-    @Qualifier("linkCollectorTaskExecutor")
+    @Qualifier("webDriverTaskExecutor")
     public TaskExecutor webDriverThreadPoolTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(10);
         executor.setMaxPoolSize(10);
-        executor.setThreadNamePrefix("sel");
+        executor.setThreadNamePrefix("SE-");
         executor.initialize();
         return executor;
     }

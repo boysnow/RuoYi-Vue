@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ruoyi.aucper.domain.TProductBidInfo;
 import com.ruoyi.aucper.service.ITProductBidInfoService;
+import com.ruoyi.aucper.yahooapi.dto.ExhibitInfoDTO.BID_STATUS;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -28,10 +29,10 @@ import com.ruoyi.common.utils.poi.ExcelUtil;
  * 商品入札情報Controller
  *
  * @author ruoyi
- * @date 2022-03-16
+ * @date 2022-05-06
  */
 @RestController
-@RequestMapping("/aucper/bidlist")
+@RequestMapping("/aucper/bid")
 public class TProductBidInfoController extends BaseController
 {
     @Autowired
@@ -40,19 +41,21 @@ public class TProductBidInfoController extends BaseController
     /**
      * 查询商品入札情報列表
      */
-//    @PreAuthorize("@ss.hasPermi('aucper:bidlist:list')")
+    @PreAuthorize("@ss.hasPermi('aucper:bid:list')")
     @GetMapping("/list")
     public TableDataInfo list(TProductBidInfo tProductBidInfo)
     {
         startPage();
-        List<TProductBidInfo> list = tProductBidInfoService.selectTProductBidInfoList(tProductBidInfo);
+        tProductBidInfo.setDeleteFlag(false);
+        tProductBidInfo.setBidStatus(BID_STATUS.closed.value);
+        List<TProductBidInfo> list = tProductBidInfoService.selectOpeningBidList(tProductBidInfo);
         return getDataTable(list);
     }
 
     /**
      * 导出商品入札情報列表
      */
-    @PreAuthorize("@ss.hasPermi('aucper:bidlist:export')")
+    @PreAuthorize("@ss.hasPermi('aucper:bid:export')")
     @Log(title = "商品入札情報", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, TProductBidInfo tProductBidInfo)
@@ -65,7 +68,7 @@ public class TProductBidInfoController extends BaseController
     /**
      * 获取商品入札情報详细信息
      */
-    @PreAuthorize("@ss.hasPermi('aucper:bidlist:query')")
+    @PreAuthorize("@ss.hasPermi('aucper:bid:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Integer id)
     {
@@ -75,7 +78,7 @@ public class TProductBidInfoController extends BaseController
     /**
      * 新增商品入札情報
      */
-    @PreAuthorize("@ss.hasPermi('aucper:bidlist:add')")
+    @PreAuthorize("@ss.hasPermi('aucper:bid:add')")
     @Log(title = "商品入札情報", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody TProductBidInfo tProductBidInfo)
@@ -86,7 +89,7 @@ public class TProductBidInfoController extends BaseController
     /**
      * 修改商品入札情報
      */
-    @PreAuthorize("@ss.hasPermi('aucper:bidlist:edit')")
+    @PreAuthorize("@ss.hasPermi('aucper:bid:edit')")
     @Log(title = "商品入札情報", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody TProductBidInfo tProductBidInfo)
@@ -97,7 +100,7 @@ public class TProductBidInfoController extends BaseController
     /**
      * 删除商品入札情報
      */
-    @PreAuthorize("@ss.hasPermi('aucper:bidlist:remove')")
+    @PreAuthorize("@ss.hasPermi('aucper:bid:remove')")
     @Log(title = "商品入札情報", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Integer[] ids)

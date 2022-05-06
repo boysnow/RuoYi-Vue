@@ -6,7 +6,6 @@ import java.util.Date;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 
@@ -14,7 +13,7 @@ import com.ruoyi.common.core.domain.BaseEntity;
  * 商品入札情報对象 T_PRODUCT_BID_INFO
  *
  * @author ruoyi
- * @date 2022-03-16
+ * @date 2022-05-06
  */
 public class TProductBidInfo extends BaseEntity
 {
@@ -46,8 +45,8 @@ public class TProductBidInfo extends BaseEntity
     private Date bidStartDate;
 
     /** 入札終了日時 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @Excel(name = "入札終了日時", width = 30, dateFormat = "yyyy-MM-dd")
+//    @JsonFormat(pattern = "yyyy-MM-dd")
+//    @Excel(name = "入札終了日時", width = 30, dateFormat = "yyyy-MM-dd")
     private Date bidEndDate;
 
     /** 最後入札者 */
@@ -97,7 +96,7 @@ public class TProductBidInfo extends BaseEntity
     private String realTimeStatus;
 
     /** 論理削除フラグ */
-    private Integer deleteFlag;
+    private Boolean deleteFlag;
 
     /** 更新回数 */
     private Long updateCount;
@@ -294,12 +293,12 @@ public class TProductBidInfo extends BaseEntity
     {
         return realTimeStatus;
     }
-    public void setDeleteFlag(Integer deleteFlag)
+    public void setDeleteFlag(Boolean deleteFlag)
     {
         this.deleteFlag = deleteFlag;
     }
 
-    public Integer getDeleteFlag()
+    public Boolean getDeleteFlag()
     {
         return deleteFlag;
     }
