@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang3.RegExUtils;
 import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
 import org.apache.poi.hssf.usermodel.HSSFPicture;
 import org.apache.poi.hssf.usermodel.HSSFPictureData;
@@ -87,6 +88,8 @@ import com.ruoyi.common.utils.reflect.ReflectUtils;
 public class ExcelUtil<T>
 {
     private static final Logger log = LoggerFactory.getLogger(ExcelUtil.class);
+
+    public static final String FORMULA_REGEX_STR = "=|-|\\+|@";
 
     public static final String[] FORMULA_STR = { "=", "-", "+", "@" };
 
@@ -669,21 +672,6 @@ public class ExcelUtil<T>
         style.setFont(totalFont);
         styles.put("total", style);
 
-        style = wb.createCellStyle();
-        style.cloneStyleFrom(styles.get("data"));
-        style.setAlignment(HorizontalAlignment.LEFT);
-        styles.put("data1", style);
-
-        style = wb.createCellStyle();
-        style.cloneStyleFrom(styles.get("data"));
-        style.setAlignment(HorizontalAlignment.CENTER);
-        styles.put("data2", style);
-
-        style = wb.createCellStyle();
-        style.cloneStyleFrom(styles.get("data"));
-        style.setAlignment(HorizontalAlignment.RIGHT);
-        styles.put("data3", style);
-
         return styles;
     }
 
@@ -714,9 +702,9 @@ public class ExcelUtil<T>
         {
             String cellValue = Convert.toStr(value);
             // 对于任何以表达式触发字符 =-+@开头的单元格，直接使用tab字符作为前缀，防止CSV注入。
-            if (StringUtils.containsAny(cellValue, FORMULA_STR))
+            if (StringUtils.startsWithAny(cellValue, FORMULA_STR))
             {
-                cellValue = StringUtils.replaceEach(cellValue, FORMULA_STR, new String[] { "\t=", "\t-", "\t+", "\t@" });
+                cellValue = RegExUtils.replaceFirst(cellValue, FORMULA_REGEX_STR, "\t$0");
             }
             cell.setCellValue(StringUtils.isNull(cellValue) ? attr.defaultValue() : cellValue + attr.suffix());
         }
@@ -783,17 +771,10 @@ public class ExcelUtil<T>
             // 设置列宽
             sheet.setColumnWidth(column, (int) ((attr.width() + 0.72) * 256));
         }
-        // 如果设置了提示信息则鼠标放上去提示.
-        if (StringUtils.isNotEmpty(attr.prompt()))
+        if (StringUtils.isNotEmpty(attr.prompt()) || attr.combo().length > 0)
         {
-            // 这里默认设了2-101列提示.
-            setXSSFPrompt(sheet, "", attr.prompt(), 1, 100, column, column);
-        }
-        // 如果设置了combo属性则本列只能选择不能输入
-        if (attr.combo().length > 0)
-        {
-            // 这里默认设了2-101列只能选择不能输入.
-            setXSSFValidation(sheet, attr.combo(), 1, 100, column, column);
+            // 提示信息或只能选择不能输入的列内容.
+            setPromptOrValidation(sheet, attr.combo(), attr.prompt(), 1, 100, column, column);
         }
     }
 
@@ -812,8 +793,7 @@ public class ExcelUtil<T>
             {
                 // 创建cell
                 cell = row.createCell(column);
-                int align = attr.align().value();
-                cell.setCellStyle(styles.get("data" + (align >= 1 && align <= 3 ? align : "")));
+                setDataCell(cell, attr);
 
                 // 用于读取对象中的属性
                 Object value = getTargetValue(vo, field, attr);
@@ -857,48 +837,57 @@ public class ExcelUtil<T>
     }
 
     /**
-     * 设置 POI XSSFSheet 单元格提示
+     * 设置单元格样式
+     * 
+     * @param cell 单元格
+     * @param excel 注解信息
+     */
+    public void setDataCell(Cell cell, Excel excel)
+    {
+        CellStyle style = wb.createCellStyle();
+        style.setAlignment(HorizontalAlignment.CENTER);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
+        style.setBorderRight(BorderStyle.THIN);
+        style.setRightBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
+        style.setBorderLeft(BorderStyle.THIN);
+        style.setLeftBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
+        style.setBorderTop(BorderStyle.THIN);
+        style.setTopBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
+        style.setBorderBottom(BorderStyle.THIN);
+        style.setBottomBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
+        style.setAlignment(excel.align());
+        Font dataFont = wb.createFont();
+        dataFont.setFontName("Arial");
+        dataFont.setFontHeightInPoints((short) 10);
+        dataFont.setColor(excel.color().index);
+        style.setFont(dataFont);
+        cell.setCellStyle(style);
+    }
+
+    /**
+     * 设置 POI XSSFSheet 单元格提示或选择框
      * 
      * @param sheet 表单
-     * @param promptTitle 提示标题
+     * @param textlist 下拉框显示的内容
      * @param promptContent 提示内容
      * @param firstRow 开始行
      * @param endRow 结束行
      * @param firstCol 开始列
      * @param endCol 结束列
      */
-    public void setXSSFPrompt(Sheet sheet, String promptTitle, String promptContent, int firstRow, int endRow,
+    public void setPromptOrValidation(Sheet sheet, String[] textlist, String promptContent, int firstRow, int endRow,
             int firstCol, int endCol)
     {
         DataValidationHelper helper = sheet.getDataValidationHelper();
-        DataValidationConstraint constraint = helper.createCustomConstraint("DD1");
+        DataValidationConstraint constraint = textlist.length > 0 ? helper.createExplicitListConstraint(textlist) : helper.createCustomConstraint("DD1");
         CellRangeAddressList regions = new CellRangeAddressList(firstRow, endRow, firstCol, endCol);
         DataValidation dataValidation = helper.createValidation(constraint, regions);
-        dataValidation.createPromptBox(promptTitle, promptContent);
-        dataValidation.setShowPromptBox(true);
-        sheet.addValidationData(dataValidation);
-    }
-
-    /**
-     * 设置某些列的值只能输入预制的数据,显示下拉框.
-     * 
-     * @param sheet 要设置的sheet.
-     * @param textlist 下拉框显示的内容
-     * @param firstRow 开始行
-     * @param endRow 结束行
-     * @param firstCol 开始列
-     * @param endCol 结束列
-     * @return 设置好的sheet.
-     */
-    public void setXSSFValidation(Sheet sheet, String[] textlist, int firstRow, int endRow, int firstCol, int endCol)
-    {
-        DataValidationHelper helper = sheet.getDataValidationHelper();
-        // 加载下拉列表内容
-        DataValidationConstraint constraint = helper.createExplicitListConstraint(textlist);
-        // 设置数据有效性加载在哪个单元格上,四个参数分别是：起始行、终止行、起始列、终止列
-        CellRangeAddressList regions = new CellRangeAddressList(firstRow, endRow, firstCol, endCol);
-        // 数据有效性对象
-        DataValidation dataValidation = helper.createValidation(constraint, regions);
+        if (StringUtils.isNotEmpty(promptContent))
+        {
+            // 如果设置了提示信息则鼠标放上去提示
+            dataValidation.createPromptBox("", promptContent);
+            dataValidation.setShowPromptBox(true);
+        }
         // 处理Excel兼容性问题
         if (dataValidation instanceof XSSFDataValidation)
         {
@@ -909,7 +898,6 @@ public class ExcelUtil<T>
         {
             dataValidation.setSuppressDropDownArrow(false);
         }
-
         sheet.addValidationData(dataValidation);
     }
 
