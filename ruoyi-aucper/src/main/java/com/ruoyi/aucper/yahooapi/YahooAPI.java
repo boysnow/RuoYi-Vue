@@ -22,10 +22,6 @@ public class YahooAPI {
     @Autowired
     private TProductBidInfoMapper tProductBidInfoMapper;
 
-	static {
-		System.setProperty("selenide.headless", "true");
-	}
-
 	public void getAllProduct() {
 
 		logger.info("getAllProduct begin.");

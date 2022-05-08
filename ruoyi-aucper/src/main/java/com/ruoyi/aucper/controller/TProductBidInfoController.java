@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ruoyi.aucper.domain.TProductBidInfo;
 import com.ruoyi.aucper.service.ITProductBidInfoService;
-import com.ruoyi.aucper.yahooapi.dto.ExhibitInfoDTO.BID_STATUS;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -47,7 +46,6 @@ public class TProductBidInfoController extends BaseController
     {
         startPage();
         tProductBidInfo.setDeleteFlag(false);
-        tProductBidInfo.setBidStatus(BID_STATUS.closed.value);
         List<TProductBidInfo> list = tProductBidInfoService.selectOpeningBidList(tProductBidInfo);
         return getDataTable(list);
     }
