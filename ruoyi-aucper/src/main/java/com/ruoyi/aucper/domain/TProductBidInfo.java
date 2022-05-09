@@ -13,7 +13,7 @@ import com.ruoyi.common.core.domain.BaseEntity;
  * 商品入札情報对象 T_PRODUCT_BID_INFO
  *
  * @author ruoyi
- * @date 2022-05-06
+ * @date 2022-05-10
  */
 public class TProductBidInfo extends BaseEntity
 {
@@ -39,9 +39,12 @@ public class TProductBidInfo extends BaseEntity
     private BigDecimal onholdPrice;
 
     /** 入札カウントダウン */
+    @Excel(name = "入札カウントダウン")
     private Integer bidCountdown;
 
     /** 入札開始日時 */
+//    @JsonFormat(pattern = "yyyy-MM-dd")
+//    @Excel(name = "入札開始日時", width = 30, dateFormat = "yyyy-MM-dd")
     private Date bidStartDate;
 
     /** 入札終了日時 */
@@ -70,9 +73,11 @@ public class TProductBidInfo extends BaseEntity
     private Long remainingTime;
 
     /** 入札停止任務 */
+    @Excel(name = "入札停止任務")
     private String bidClosingTask;
 
     /** 価格任務 */
+    @Excel(name = "価格任務")
     private String bidPriceTask;
 
     /** 入札任務 */
@@ -94,24 +99,6 @@ public class TProductBidInfo extends BaseEntity
     /** リアルステータス */
     @Excel(name = "リアルステータス")
     private String realTimeStatus;
-
-    /** 論理削除フラグ */
-    private Boolean deleteFlag;
-
-    /** 更新回数 */
-    private Long updateCount;
-
-    /** 登録ユーザ */
-    private String createUser;
-
-    /** 登録日時 */
-    private Date createDatetime;
-
-    /** 更新ユーザ */
-    private String updateUser;
-
-    /** 更新日時 */
-    private Date updateDatetime;
 
     public void setId(Integer id)
     {
@@ -293,60 +280,6 @@ public class TProductBidInfo extends BaseEntity
     {
         return realTimeStatus;
     }
-    public void setDeleteFlag(Boolean deleteFlag)
-    {
-        this.deleteFlag = deleteFlag;
-    }
-
-    public Boolean getDeleteFlag()
-    {
-        return deleteFlag;
-    }
-    public void setUpdateCount(Long updateCount)
-    {
-        this.updateCount = updateCount;
-    }
-
-    public Long getUpdateCount()
-    {
-        return updateCount;
-    }
-    public void setCreateUser(String createUser)
-    {
-        this.createUser = createUser;
-    }
-
-    public String getCreateUser()
-    {
-        return createUser;
-    }
-    public void setCreateDatetime(Date createDatetime)
-    {
-        this.createDatetime = createDatetime;
-    }
-
-    public Date getCreateDatetime()
-    {
-        return createDatetime;
-    }
-    public void setUpdateUser(String updateUser)
-    {
-        this.updateUser = updateUser;
-    }
-
-    public String getUpdateUser()
-    {
-        return updateUser;
-    }
-    public void setUpdateDatetime(Date updateDatetime)
-    {
-        this.updateDatetime = updateDatetime;
-    }
-
-    public Date getUpdateDatetime()
-    {
-        return updateDatetime;
-    }
 
     @Override
     public String toString() {
@@ -373,10 +306,10 @@ public class TProductBidInfo extends BaseEntity
             .append("realTimeStatus", getRealTimeStatus())
             .append("deleteFlag", getDeleteFlag())
             .append("updateCount", getUpdateCount())
-            .append("createUser", getCreateUser())
-            .append("createDatetime", getCreateDatetime())
-            .append("updateUser", getUpdateUser())
-            .append("updateDatetime", getUpdateDatetime())
+            .append("createBy", getCreateBy())
+            .append("createTime", getCreateTime())
+            .append("updateBy", getUpdateBy())
+            .append("updateTime", getUpdateTime())
             .toString();
     }
 }

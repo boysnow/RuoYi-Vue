@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.aucper.mapper.TYahooAccountMapper">
+    
+    <resultMap type="TYahooAccount" id="TYahooAccountResult">
+        <result property="id"    column="ID"    />
+        <result property="yahooAccountId"    column="YAHOO_ACCOUNT_ID"    />
+        <result property="password"    column="PASSWORD"    />
+        <result property="anonymousName"    column="ANONYMOUS_NAME"    />
+        <result property="priority"    column="PRIORITY"    />
+        <result property="conversationCount"    column="CONVERSATION_COUNT"    />
+        <result property="deleteFlag"    column="DELETE_FLAG"    />
+        <result property="updateCount"    column="UPDATE_COUNT"    />
+        <result property="createBy"    column="CREATE_BY"    />
+        <result property="createTime"    column="CREATE_TIME"    />
+        <result property="updateBy"    column="UPDATE_BY"    />
+        <result property="updateTime"    column="UPDATE_TIME"    />
+    </resultMap>
+
+    <sql id="selectTYahooAccountVo">
+        select ID, YAHOO_ACCOUNT_ID, PASSWORD, ANONYMOUS_NAME, PRIORITY, CONVERSATION_COUNT, DELETE_FLAG, UPDATE_COUNT, CREATE_BY, CREATE_TIME, UPDATE_BY, UPDATE_TIME from T_YAHOO_ACCOUNT
+    </sql>
+
+    <select id="selectTYahooAccountList" parameterType="TYahooAccount" resultMap="TYahooAccountResult">
+        <include refid="selectTYahooAccountVo"/>
+        <where>  
+            <if test="yahooAccountId != null  and yahooAccountId != ''"> and YAHOO_ACCOUNT_ID = #{yahooAccountId}</if>
+            <if test="password != null  and password != ''"> and PASSWORD = #{password}</if>
+            <if test="anonymousName != null  and anonymousName != ''"> and ANONYMOUS_NAME like concat('%', #{anonymousName}, '%')</if>
+            <if test="priority != null "> and PRIORITY = #{priority}</if>
+            <if test="conversationCount != null "> and CONVERSATION_COUNT = #{conversationCount}</if>
+            <if test="deleteFlag != null "> and DELETE_FLAG = #{deleteFlag}</if>
+            <if test="updateCount != null "> and UPDATE_COUNT = #{updateCount}</if>
+            <if test="createBy != null  and createBy != ''"> and CREATE_BY = #{createBy}</if>
+            <if test="createTime != null "> and CREATE_TIME = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and UPDATE_BY = #{updateBy}</if>
+            <if test="updateTime != null "> and UPDATE_TIME = #{updateTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectTYahooAccountById" parameterType="Long" resultMap="TYahooAccountResult">
+        <include refid="selectTYahooAccountVo"/>
+        where ID = #{id}
+    </select>
+        
+    <insert id="insertTYahooAccount" parameterType="TYahooAccount" useGeneratedKeys="true" keyProperty="id">
+        insert into T_YAHOO_ACCOUNT
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="yahooAccountId != null and yahooAccountId != ''">YAHOO_ACCOUNT_ID,</if>
+            <if test="password != null and password != ''">PASSWORD,</if>
+            <if test="anonymousName != null and anonymousName != ''">ANONYMOUS_NAME,</if>
+            <if test="priority != null">PRIORITY,</if>
+            <if test="conversationCount != null">CONVERSATION_COUNT,</if>
+            <if test="deleteFlag != null">DELETE_FLAG,</if>
+            <if test="updateCount != null">UPDATE_COUNT,</if>
+            <if test="createBy != null">CREATE_BY,</if>
+            <if test="createTime != null">CREATE_TIME,</if>
+            <if test="updateBy != null">UPDATE_BY,</if>
+            <if test="updateTime != null">UPDATE_TIME,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="yahooAccountId != null and yahooAccountId != ''">#{yahooAccountId},</if>
+            <if test="password != null and password != ''">#{password},</if>
+            <if test="anonymousName != null and anonymousName != ''">#{anonymousName},</if>
+            <if test="priority != null">#{priority},</if>
+            <if test="conversationCount != null">#{conversationCount},</if>
+            <if test="deleteFlag != null">#{deleteFlag},</if>
+            <if test="updateCount != null">#{updateCount},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTYahooAccount" parameterType="TYahooAccount">
+        update T_YAHOO_ACCOUNT
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="yahooAccountId != null and yahooAccountId != ''">YAHOO_ACCOUNT_ID = #{yahooAccountId},</if>
+            <if test="password != null and password != ''">PASSWORD = #{password},</if>
+            <if test="anonymousName != null and anonymousName != ''">ANONYMOUS_NAME = #{anonymousName},</if>
+            <if test="priority != null">PRIORITY = #{priority},</if>
+            <if test="conversationCount != null">CONVERSATION_COUNT = #{conversationCount},</if>
+            <if test="deleteFlag != null">DELETE_FLAG = #{deleteFlag},</if>
+            <if test="updateCount != null">UPDATE_COUNT = #{updateCount},</if>
+            <if test="createBy != null">CREATE_BY = #{createBy},</if>
+            <if test="createTime != null">CREATE_TIME = #{createTime},</if>
+            <if test="updateBy != null">UPDATE_BY = #{updateBy},</if>
+            <if test="updateTime != null">UPDATE_TIME = #{updateTime},</if>
+        </trim>
+        where ID = #{id}
+    </update>
+
+    <delete id="deleteTYahooAccountById" parameterType="Long">
+        delete from T_YAHOO_ACCOUNT where ID = #{id}
+    </delete>
+
+    <delete id="deleteTYahooAccountByIds" parameterType="String">
+        delete from T_YAHOO_ACCOUNT where ID in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

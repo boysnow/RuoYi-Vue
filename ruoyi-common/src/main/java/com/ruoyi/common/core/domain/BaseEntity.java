@@ -4,11 +4,12 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * Entity基类
- * 
+ *
  * @author ruoyi
  */
 public class BaseEntity implements Serializable
@@ -17,6 +18,12 @@ public class BaseEntity implements Serializable
 
     /** 搜索值 */
     private String searchValue;
+
+    /** 論理削除フラグ */
+    private Boolean deleteFlag;
+
+    /** 更新回数 */
+    private Integer updateCount;
 
     /** 创建者 */
     private String createBy;
@@ -48,7 +55,23 @@ public class BaseEntity implements Serializable
         this.searchValue = searchValue;
     }
 
-    public String getCreateBy()
+    public Boolean getDeleteFlag() {
+		return deleteFlag;
+	}
+
+	public void setDeleteFlag(Boolean deleteFlag) {
+		this.deleteFlag = deleteFlag;
+	}
+
+	public Integer getUpdateCount() {
+		return updateCount;
+	}
+
+	public void setUpdateCount(Integer updateCount) {
+		this.updateCount = updateCount;
+	}
+
+	public String getCreateBy()
     {
         return createBy;
     }

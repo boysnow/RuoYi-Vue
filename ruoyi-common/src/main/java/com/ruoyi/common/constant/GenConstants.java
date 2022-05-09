@@ -2,7 +2,7 @@ package com.ruoyi.common.constant;
 
 /**
  * 代码生成通用常量
- * 
+ *
  * @author ruoyi
  */
 public class GenConstants
@@ -56,7 +56,7 @@ public class GenConstants
             "update_time", "remark" };
 
     /** Entity基类字段 */
-    public static final String[] BASE_ENTITY = { "createBy", "createTime", "updateBy", "updateTime", "remark" };
+    public static final String[] BASE_ENTITY = { "deleteFlag", "updateCount", "createBy", "createTime", "updateBy", "updateTime", "remark" };
 
     /** Tree基类字段 */
     public static final String[] TREE_ENTITY = { "parentName", "parentId", "orderNum", "ancestors", "children" };

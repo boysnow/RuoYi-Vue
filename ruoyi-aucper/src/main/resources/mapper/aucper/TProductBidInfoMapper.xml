@@ -27,14 +27,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="realTimeStatus"    column="REAL_TIME_STATUS"    />
         <result property="deleteFlag"    column="DELETE_FLAG"    />
         <result property="updateCount"    column="UPDATE_COUNT"    />
-        <result property="createUser"    column="CREATE_USER"    />
-        <result property="createDatetime"    column="CREATE_DATETIME"    />
-        <result property="updateUser"    column="UPDATE_USER"    />
-        <result property="updateDatetime"    column="UPDATE_DATETIME"    />
+        <result property="createBy"    column="CREATE_BY"    />
+        <result property="createTime"    column="CREATE_TIME"    />
+        <result property="updateBy"    column="UPDATE_BY"    />
+        <result property="updateTime"    column="UPDATE_TIME"    />
     </resultMap>
 
     <sql id="selectTProductBidInfoVo">
-        select ID, PRODUCT_CODE, PRODUCT_TITLE, NOW_PRICE, ONHOLD_PRICE, BID_COUNTDOWN, BID_START_DATE, BID_END_DATE, BID_LAST_USER, TRUSTEESHIP_USER1, TRUSTEESHIP_USER2, BID_USER_COUNT, REMAINING_TIME, BID_CLOSING_TASK, BID_PRICE_TASK, BID_TASK, BID_STATUS, TASK_STATUS, REMAINING_TIME_UNIT, REAL_TIME_STATUS, DELETE_FLAG, UPDATE_COUNT, CREATE_USER, CREATE_DATETIME, UPDATE_USER, UPDATE_DATETIME from T_PRODUCT_BID_INFO
+        select ID, PRODUCT_CODE, PRODUCT_TITLE, NOW_PRICE, ONHOLD_PRICE, BID_COUNTDOWN, BID_START_DATE, BID_END_DATE, BID_LAST_USER, TRUSTEESHIP_USER1, TRUSTEESHIP_USER2, BID_USER_COUNT, REMAINING_TIME, BID_CLOSING_TASK, BID_PRICE_TASK, BID_TASK, BID_STATUS, TASK_STATUS, REMAINING_TIME_UNIT, REAL_TIME_STATUS, DELETE_FLAG, UPDATE_COUNT, CREATE_BY, CREATE_TIME, UPDATE_BY, UPDATE_TIME from T_PRODUCT_BID_INFO
     </sql>
 
     <select id="selectTProductBidInfoList" parameterType="TProductBidInfo" resultMap="TProductBidInfoResult">
@@ -43,11 +43,28 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="productCode != null  and productCode != ''"> and PRODUCT_CODE = #{productCode}</if>
             <if test="productTitle != null  and productTitle != ''"> and PRODUCT_TITLE like concat('%', #{productTitle}, '%')</if>
             <if test="nowPrice != null "> and NOW_PRICE &gt;= #{nowPrice}</if>
+            <if test="onholdPrice != null "> and ONHOLD_PRICE = #{onholdPrice}</if>
+            <if test="bidCountdown != null "> and BID_COUNTDOWN = #{bidCountdown}</if>
+            <if test="bidStartDate != null "> and BID_START_DATE = #{bidStartDate}</if>
             <if test="bidEndDate != null "> and BID_END_DATE &lt;= #{bidEndDate}</if>
+            <if test="bidLastUser != null  and bidLastUser != ''"> and BID_LAST_USER = #{bidLastUser}</if>
+            <if test="trusteeshipUser1 != null  and trusteeshipUser1 != ''"> and TRUSTEESHIP_USER1 = #{trusteeshipUser1}</if>
+            <if test="trusteeshipUser2 != null  and trusteeshipUser2 != ''"> and TRUSTEESHIP_USER2 = #{trusteeshipUser2}</if>
+            <if test="bidUserCount != null "> and BID_USER_COUNT = #{bidUserCount}</if>
+            <if test="remainingTime != null "> and REMAINING_TIME = #{remainingTime}</if>
+            <if test="bidClosingTask != null  and bidClosingTask != ''"> and BID_CLOSING_TASK = #{bidClosingTask}</if>
+            <if test="bidPriceTask != null  and bidPriceTask != ''"> and BID_PRICE_TASK = #{bidPriceTask}</if>
+            <if test="bidTask != null  and bidTask != ''"> and BID_TASK = #{bidTask}</if>
             <if test="bidStatus != null  and bidStatus != ''"> and BID_STATUS = #{bidStatus}</if>
             <if test="taskStatus != null  and taskStatus != ''"> and TASK_STATUS = #{taskStatus}</if>
+            <if test="remainingTimeUnit != null  and remainingTimeUnit != ''"> and REMAINING_TIME_UNIT = #{remainingTimeUnit}</if>
             <if test="realTimeStatus != null  and realTimeStatus != ''"> and REAL_TIME_STATUS = #{realTimeStatus}</if>
             <if test="deleteFlag != null "> and DELETE_FLAG = #{deleteFlag}</if>
+            <if test="updateCount != null "> and UPDATE_COUNT = #{updateCount}</if>
+            <if test="createBy != null  and createBy != ''"> and CREATE_BY = #{createBy}</if>
+            <if test="createTime != null "> and CREATE_TIME = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and UPDATE_BY = #{updateBy}</if>
+            <if test="updateTime != null "> and UPDATE_TIME = #{updateTime}</if>
         </where>
     </select>
 
@@ -94,10 +111,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="realTimeStatus != null">REAL_TIME_STATUS,</if>
             <if test="deleteFlag != null">DELETE_FLAG,</if>
             <if test="updateCount != null">UPDATE_COUNT,</if>
-            <if test="createUser != null">CREATE_USER,</if>
-            <if test="createDatetime != null">CREATE_DATETIME,</if>
-            <if test="updateUser != null">UPDATE_USER,</if>
-            <if test="updateDatetime != null">UPDATE_DATETIME,</if>
+            <if test="createBy != null">CREATE_BY,</if>
+            <if test="createTime != null">CREATE_TIME,</if>
+            <if test="updateBy != null">UPDATE_BY,</if>
+            <if test="updateTime != null">UPDATE_TIME,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="productCode != null">#{productCode},</if>
@@ -121,10 +138,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="realTimeStatus != null">#{realTimeStatus},</if>
             <if test="deleteFlag != null">#{deleteFlag},</if>
             <if test="updateCount != null">#{updateCount},</if>
-            <if test="createUser != null">#{createUser},</if>
-            <if test="createDatetime != null">#{createDatetime},</if>
-            <if test="updateUser != null">#{updateUser},</if>
-            <if test="updateDatetime != null">#{updateDatetime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
          </trim>
     </insert>
 
@@ -152,10 +169,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="realTimeStatus != null">REAL_TIME_STATUS = #{realTimeStatus},</if>
             <if test="deleteFlag != null">DELETE_FLAG = #{deleteFlag},</if>
             <if test="updateCount != null">UPDATE_COUNT = #{updateCount},</if>
-            <if test="createUser != null">CREATE_USER = #{createUser},</if>
-            <if test="createDatetime != null">CREATE_DATETIME = #{createDatetime},</if>
-            <if test="updateUser != null">UPDATE_USER = #{updateUser},</if>
-            <if test="updateDatetime != null">UPDATE_DATETIME = #{updateDatetime},</if>
+            <if test="createBy != null">CREATE_BY = #{createBy},</if>
+            <if test="createTime != null">CREATE_TIME = #{createTime},</if>
+            <if test="updateBy != null">UPDATE_BY = #{updateBy},</if>
+            <if test="updateTime != null">UPDATE_TIME = #{updateTime},</if>
         </trim>
         where ID = #{id}
     </update>

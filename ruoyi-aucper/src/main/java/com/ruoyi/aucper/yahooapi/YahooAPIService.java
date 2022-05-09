@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -266,10 +267,12 @@ public class YahooAPIService {
 		bidInfo.setRemainingTimeUnit(exhibitInfoDTO.getLeftTimeUnit());
 
 		if (bidInfo.getId() == null || bidInfo.getId() == 0) {
-			bidInfo.setUpdateDatetime(com.ruoyi.common.utils.DateUtils.getNowDate());
+			Date nowTime = com.ruoyi.common.utils.DateUtils.getNowDate();
+			bidInfo.setCreateTime(nowTime);
+			bidInfo.setUpdateTime(nowTime);
 			tProductBidInfoMapper.insertTProductBidInfo(bidInfo);
 		} else {
-			bidInfo.setUpdateDatetime(com.ruoyi.common.utils.DateUtils.getNowDate());
+			bidInfo.setUpdateTime(com.ruoyi.common.utils.DateUtils.getNowDate());
 			tProductBidInfoMapper.updateTProductBidInfo(bidInfo);
 		}
 	}
