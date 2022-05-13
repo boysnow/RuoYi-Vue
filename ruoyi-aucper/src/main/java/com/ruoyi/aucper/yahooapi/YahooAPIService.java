@@ -7,7 +7,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -28,10 +27,11 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.WebDriverRunner;
 import com.ruoyi.aucper.config.YahooAuctionConifg;
+import com.ruoyi.aucper.constant.BidStatus;
+import com.ruoyi.aucper.constant.RealStatus;
 import com.ruoyi.aucper.domain.TProductBidInfo;
 import com.ruoyi.aucper.mapper.TProductBidInfoMapper;
 import com.ruoyi.aucper.yahooapi.dto.ExhibitInfoDTO;
-import com.ruoyi.aucper.yahooapi.dto.ExhibitInfoDTO.BID_STATUS;
 
 @Service
 public class YahooAPIService {
@@ -47,6 +47,8 @@ public class YahooAPIService {
 
     @Autowired
     private TProductBidInfoMapper tProductBidInfoMapper;
+    @Autowired
+    private StatusService statusService;
 
 	// 開始・終了時間
 	private static final String FMT_DATE_JSON = "yyyy-MM-dd HH:mm:ss";
@@ -64,8 +66,13 @@ public class YahooAPIService {
     		webDriver = (WebDriver) poolTargetSourceWebDriver.getTarget();
     		WebDriverRunner.setWebDriver(webDriver);
 
-
+    		/**
+    		 * 上記でプールからWebDriverオブジェクトを取得する為に待機する
+    		 * その為、開始ログや更新処理などをここ以降に実装する
+    		 */
     		logger.info("@@@@@@@@ Get exhibit info by [" + id + "] - START");
+
+        	statusService.updateRealStatus(id, RealStatus.Updating);
 
 //    		String baseurl = "https://page.auctions.yahoo.co.jp/jp/auction/";
 
@@ -80,47 +87,46 @@ public class YahooAPIService {
     		boolean existJson = true;
     		Map<String, Map<String, String>> pageData = executeJavaScript("return pageData;");
 //    		Object pageData = executeJavaScript("return pageData;");
-    		System.out.println("pageData");
-    		System.out.println(pageData.get("items"));
+//    		System.out.println("pageData");
+//    		System.out.println(pageData.get("items"));
 
-//    		try {
-//    			Map<String, String> items = pageData.get("items");
-    //
-//    			// 商品（オークション）のタイトル
-//    			exhibitInfoDTO.setTitle(items.get("productName"));
-//    			// 現在価格
-//    			BigDecimal price = BigDecimal.ZERO;
-//    			try {
-//    				price = NumberUtils.toScaledBigDecimal(items.get("price"));
-//    			} catch (Exception e) {
-//    				e.printStackTrace();
-//    			}
-//    			exhibitInfoDTO.setPrice(price);
-//    			// 現在の入札数
-//    			exhibitInfoDTO.setBids(NumberUtils.toInt(items.get("bids")));
-//    			// 出品開始日時
-//    			String starttime = items.get("starttime");
-//    			if (StringUtils.isNotEmpty(starttime)) {
-//    				exhibitInfoDTO.setEndDate(DateUtils.parseDate(starttime, FMT_DATE_JSON));
-//    			}
-//    			// 出品終了日時
-//    			String endDate = items.get("endtime");
-//    			if (StringUtils.isNotEmpty(endDate)) {
-//    				exhibitInfoDTO.setEndDate(DateUtils.parseDate(endDate, FMT_DATE_JSON));
-//    			}
-//    			// 状態
-//    			String isClosed = items.get("isClosed");
-//    			exhibitInfoDTO.setStatus(BID_STATUS.open.value);
-//    			if ("1".equals(isClosed)) {
-//    				exhibitInfoDTO.setStatus(BID_STATUS.closed.value);
-//    			}
-    //
-//    		} catch (Exception e) {
-//    			System.out.println(e);
-//    			e.printStackTrace();
-//    			existJson = false;
-//    		}
+    		try {
+    			Map<String, String> items = pageData.get("items");
 
+    			// 商品（オークション）のタイトル
+    			exhibitInfoDTO.setTitle(items.get("productName"));
+    			// 現在価格
+    			BigDecimal price = BigDecimal.ZERO;
+    			try {
+    				price = NumberUtils.toScaledBigDecimal(items.get("price"));
+    			} catch (Exception e) {
+    				e.printStackTrace();
+    			}
+    			exhibitInfoDTO.setPrice(price);
+    			// 現在の入札数
+    			exhibitInfoDTO.setBids(NumberUtils.toInt(items.get("bids")));
+    			// 出品開始日時
+    			String starttime = items.get("starttime");
+    			if (StringUtils.isNotEmpty(starttime)) {
+    				exhibitInfoDTO.setEndDate(DateUtils.parseDate(starttime, FMT_DATE_JSON));
+    			}
+    			// 出品終了日時
+    			String endDate = items.get("endtime");
+    			if (StringUtils.isNotEmpty(endDate)) {
+    				exhibitInfoDTO.setEndDate(DateUtils.parseDate(endDate, FMT_DATE_JSON));
+    			}
+    			// 状態
+    			String isClosed = items.get("isClosed");
+    			exhibitInfoDTO.setStatus(BidStatus.open.value);
+    			if ("1".equals(isClosed)) {
+    				exhibitInfoDTO.setStatus(BidStatus.closed.value);
+    			}
+
+    		} catch (Exception e) {
+    			System.out.println(e);
+    			e.printStackTrace();
+    			existJson = false;
+    		}
 
 
     		// JSONより取得できなかった場合、スクレイピングする
@@ -140,13 +146,14 @@ public class YahooAPIService {
 
     			// 現在の入札数
     			String bids = $(".Count__count .Count__number").text();
-    			bids = bids.replaceAll("[^0-9].*$", "");
+    			System.out.println("before=" + bids);
+    			bids = bids.replaceAll("[^0-9](.|\n)*$", "");
+    			System.out.println("after=" + bids);
     			exhibitInfoDTO.setBids(NumberUtils.toInt(bids));
 
     			ElementsCollection elements = $(".ProductDetail__items--primary").$$(".ProductDetail__description");
     			// 出品開始日時
     			String starttime = elements.get(1).getText().replaceAll("：", "");
-    			System.out.println("starttime=" + starttime);
     			if (StringUtils.isNotEmpty(starttime)) {
     				try {
     					exhibitInfoDTO.setStartDate(DateUtils.parseDate(starttime, FMT_DATE_HTML));
@@ -156,7 +163,6 @@ public class YahooAPIService {
     			}
     			// 出品終了日時
     			String endDate = elements.get(2).getText().replaceAll("：", "");
-    			System.out.println("endDate=" + endDate);
     			if (StringUtils.isNotEmpty(endDate)) {
     				try {
     					exhibitInfoDTO.setEndDate(DateUtils.parseDate(endDate, FMT_DATE_HTML));
@@ -168,9 +174,9 @@ public class YahooAPIService {
     			String statusStr = $(".Count__count--sideLine .Count__number").getText();
     			System.out.println("@@@@@@@@@@@@@@@@@@@@@");
     			System.out.println(statusStr);
-    			exhibitInfoDTO.setStatus(BID_STATUS.open.value);
-    			if (StringUtils.isNotEmpty(statusStr) && statusStr.startsWith(BID_STATUS.closed.text)) {
-    				exhibitInfoDTO.setStatus(BID_STATUS.closed.value);
+    			exhibitInfoDTO.setStatus(BidStatus.open.value);
+    			if (StringUtils.isNotEmpty(statusStr) && statusStr.startsWith(BidStatus.closed.text)) {
+    				exhibitInfoDTO.setStatus(BidStatus.closed.value);
     			}
 
 
@@ -178,7 +184,7 @@ public class YahooAPIService {
 
     		// 最高額入札者のID
     		String keyText = "最高額入札者";
-    		if (BID_STATUS.closed.value.equals(exhibitInfoDTO.getStatus())) {
+    		if (BidStatus.closed.value.equals(exhibitInfoDTO.getStatus())) {
     			keyText = "落札者";
     		}
 
@@ -239,18 +245,14 @@ public class YahooAPIService {
 	private void updateTProductBidInfo(ExhibitInfoDTO exhibitInfoDTO) {
 
 		// 存在チェック
-		TProductBidInfo conditions = new TProductBidInfo();
-		conditions.setProductCode(exhibitInfoDTO.getAuctionID());
-		List<TProductBidInfo> list = tProductBidInfoMapper.selectTProductBidInfoList(conditions);
-		TProductBidInfo bidInfo = null;
-		if (list.size() != 0) {
-			bidInfo = list.get(0);
-		} else {
+		TProductBidInfo bidInfo = tProductBidInfoMapper.selectTProductBidInfoByProductCode(exhibitInfoDTO.getAuctionID());
+		boolean existFlag = true;
+		if (bidInfo == null) {
 			bidInfo = new TProductBidInfo();
-			bidInfo.setProductCode(exhibitInfoDTO.getAuctionID());
+			existFlag = false;
 		}
 
-//		bidInfo.setProductCode(exhibitInfoDTO.getAuctionID());
+		bidInfo.setProductCode(exhibitInfoDTO.getAuctionID());
 		bidInfo.setProductTitle(exhibitInfoDTO.getTitle());
 		bidInfo.setNowPrice(exhibitInfoDTO.getPrice());
 		bidInfo.setOnholdPrice(exhibitInfoDTO.getInsideBidorbuy());
@@ -261,19 +263,16 @@ public class YahooAPIService {
 		bidInfo.setTrusteeshipUser2(null);
 		bidInfo.setBidUserCount(exhibitInfoDTO.getBids());
 		bidInfo.setBidStatus(exhibitInfoDTO.getStatus());
-		if (exhibitInfoDTO.getLeftTime() != null) {
-			bidInfo.setRemainingTime(exhibitInfoDTO.getLeftTime().longValue());
-		}
-		bidInfo.setRemainingTimeUnit(exhibitInfoDTO.getLeftTimeUnit());
+		bidInfo.setRealStatus(RealStatus.Watching.value);
 
-		if (bidInfo.getId() == null || bidInfo.getId() == 0) {
+		if (existFlag) {
+			bidInfo.setUpdateTime(com.ruoyi.common.utils.DateUtils.getNowDate());
+			tProductBidInfoMapper.updateTProductBidInfo(bidInfo);
+		} else {
 			Date nowTime = com.ruoyi.common.utils.DateUtils.getNowDate();
 			bidInfo.setCreateTime(nowTime);
 			bidInfo.setUpdateTime(nowTime);
 			tProductBidInfoMapper.insertTProductBidInfo(bidInfo);
-		} else {
-			bidInfo.setUpdateTime(com.ruoyi.common.utils.DateUtils.getNowDate());
-			tProductBidInfoMapper.updateTProductBidInfo(bidInfo);
 		}
 	}
 

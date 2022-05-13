@@ -1,6 +1,8 @@
 package com.ruoyi.aucper.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ruoyi.aucper.config.YahooAuctionConifg;
 import com.ruoyi.aucper.domain.TProductBidInfo;
 import com.ruoyi.aucper.service.ITProductBidInfoService;
 import com.ruoyi.common.annotation.Log;
@@ -37,6 +40,9 @@ public class TProductBidInfoController extends BaseController
     @Autowired
     private ITProductBidInfoService tProductBidInfoService;
 
+    @Autowired
+    private YahooAuctionConifg config;
+
     /**
      * 查询商品入札情報列表
      */
@@ -44,9 +50,9 @@ public class TProductBidInfoController extends BaseController
     @GetMapping("/list")
     public TableDataInfo list(TProductBidInfo tProductBidInfo)
     {
-        startPage();
+//        startPage();
         tProductBidInfo.setDeleteFlag(false);
-        List<TProductBidInfo> list = tProductBidInfoService.selectOpeningBidList(tProductBidInfo);
+        List<TProductBidInfo> list = tProductBidInfoService.selectWatchingBidList(tProductBidInfo);
         return getDataTable(list);
     }
 
@@ -67,10 +73,10 @@ public class TProductBidInfoController extends BaseController
      * 获取商品入札情報详细信息
      */
     @PreAuthorize("@ss.hasPermi('aucper:bid:query')")
-    @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Integer id)
+    @GetMapping(value = "/{productCode}")
+    public AjaxResult getInfo(@PathVariable("productCode") String productCode)
     {
-        return AjaxResult.success(tProductBidInfoService.selectTProductBidInfoById(id));
+        return AjaxResult.success(tProductBidInfoService.selectTProductBidInfoByProductCode(productCode));
     }
 
     /**
@@ -100,9 +106,20 @@ public class TProductBidInfoController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('aucper:bid:remove')")
     @Log(title = "商品入札情報", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Integer[] ids)
+	@DeleteMapping("/{productCodes}")
+    public AjaxResult remove(@PathVariable String[] productCodes)
     {
-        return toAjax(tProductBidInfoService.deleteTProductBidInfoByIds(ids));
+        return toAjax(tProductBidInfoService.deleteTProductBidInfoByProductCodes(productCodes));
+    }
+
+    /**
+     * 入札関連の設定情報
+     */
+    @PreAuthorize("@ss.hasPermi('aucper:bid:query')")
+    @GetMapping(value = "/config")
+    public AjaxResult getConfigInfo() {
+    	Map<String, String> data = new HashMap<>();
+    	data.put("baseUrl", config.getBaseUrl());
+        return AjaxResult.success(data);
     }
 }

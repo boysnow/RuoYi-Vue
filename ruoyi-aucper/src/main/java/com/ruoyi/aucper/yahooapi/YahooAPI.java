@@ -7,9 +7,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ruoyi.aucper.constant.BidStatus;
 import com.ruoyi.aucper.domain.TProductBidInfo;
-import com.ruoyi.aucper.mapper.TProductBidInfoMapper;
-import com.ruoyi.aucper.yahooapi.dto.ExhibitInfoDTO.BID_STATUS;
+import com.ruoyi.aucper.service.ITProductBidInfoService;
 
 @Service
 public class YahooAPI {
@@ -18,9 +18,8 @@ public class YahooAPI {
 
     @Autowired
     private YahooAPIService yahooAPIService;
-
     @Autowired
-    private TProductBidInfoMapper tProductBidInfoMapper;
+    private ITProductBidInfoService tProductBidInfoService;
 
 	public void getAllProduct() {
 
@@ -28,8 +27,8 @@ public class YahooAPI {
 
 		TProductBidInfo cond = new TProductBidInfo();
 		cond.setDeleteFlag(false);
-		cond.setBidStatus(BID_STATUS.closed.value);
-		List<TProductBidInfo> list = tProductBidInfoMapper.selectOpeningBidList(cond);
+		cond.setBidStatus(BidStatus.closed.value);
+		List<TProductBidInfo> list = tProductBidInfoService.selectOpeningBidList(cond);
 		if (list.size() == 0) {
 			return;
 		}

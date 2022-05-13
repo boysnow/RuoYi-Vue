@@ -5,12 +5,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.aucper.mapper.TProductBidInfoMapper">
 
     <resultMap type="TProductBidInfo" id="TProductBidInfoResult">
-        <result property="id"    column="ID"    />
         <result property="productCode"    column="PRODUCT_CODE"    />
         <result property="productTitle"    column="PRODUCT_TITLE"    />
         <result property="nowPrice"    column="NOW_PRICE"    />
         <result property="onholdPrice"    column="ONHOLD_PRICE"    />
-        <result property="bidCountdown"    column="BID_COUNTDOWN"    />
         <result property="bidStartDate"    column="BID_START_DATE"    />
         <result property="bidEndDate"    column="BID_END_DATE"    />
         <result property="bidLastUser"    column="BID_LAST_USER"    />
@@ -18,13 +16,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="trusteeshipUser2"    column="TRUSTEESHIP_USER2"    />
         <result property="bidUserCount"    column="BID_USER_COUNT"    />
         <result property="remainingTime"    column="REMAINING_TIME"    />
-        <result property="bidClosingTask"    column="BID_CLOSING_TASK"    />
-        <result property="bidPriceTask"    column="BID_PRICE_TASK"    />
-        <result property="bidTask"    column="BID_TASK"    />
-        <result property="bidStatus"    column="BID_STATUS"    />
-        <result property="taskStatus"    column="TASK_STATUS"    />
         <result property="remainingTimeUnit"    column="REMAINING_TIME_UNIT"    />
-        <result property="realTimeStatus"    column="REAL_TIME_STATUS"    />
+        <result property="bidStatus"    column="BID_STATUS"    />
+        <result property="taskKind"    column="TASK_KIND"    />
+        <result property="realStatus"    column="REAL_STATUS"    />
         <result property="deleteFlag"    column="DELETE_FLAG"    />
         <result property="updateCount"    column="UPDATE_COUNT"    />
         <result property="createBy"    column="CREATE_BY"    />
@@ -34,17 +29,52 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectTProductBidInfoVo">
-        select ID, PRODUCT_CODE, PRODUCT_TITLE, NOW_PRICE, ONHOLD_PRICE, BID_COUNTDOWN, BID_START_DATE, BID_END_DATE, BID_LAST_USER, TRUSTEESHIP_USER1, TRUSTEESHIP_USER2, BID_USER_COUNT, REMAINING_TIME, BID_CLOSING_TASK, BID_PRICE_TASK, BID_TASK, BID_STATUS, TASK_STATUS, REMAINING_TIME_UNIT, REAL_TIME_STATUS, DELETE_FLAG, UPDATE_COUNT, CREATE_BY, CREATE_TIME, UPDATE_BY, UPDATE_TIME from T_PRODUCT_BID_INFO
+        select PRODUCT_CODE, PRODUCT_TITLE, NOW_PRICE, ONHOLD_PRICE, BID_START_DATE, BID_END_DATE, BID_LAST_USER, TRUSTEESHIP_USER1, TRUSTEESHIP_USER2, BID_USER_COUNT, REMAINING_TIME, REMAINING_TIME_UNIT, BID_STATUS, TASK_KIND, REAL_STATUS, DELETE_FLAG, UPDATE_COUNT, CREATE_BY, CREATE_TIME, UPDATE_BY, UPDATE_TIME from T_PRODUCT_BID_INFO
+    </sql>
+
+    <sql id="selectWatchingBidListVo">
+		select
+		    PRODUCT_CODE
+		    , PRODUCT_TITLE
+		    , NOW_PRICE
+		    , ONHOLD_PRICE
+		    , BID_START_DATE
+		    , BID_END_DATE
+		    , BID_LAST_USER
+		    , TRUSTEESHIP_USER1
+		    , TRUSTEESHIP_USER2
+		    , BID_USER_COUNT
+		    , case
+		        when BID_STATUS = '2' then ''
+		        when TIMESTAMPDIFF(DAY, sysdate(), BID_END_DATE) <![CDATA[ <> ]]> 0 then TIMESTAMPDIFF(DAY, sysdate(), BID_END_DATE) + 1
+		        when TIMESTAMPDIFF(HOUR, sysdate(), BID_END_DATE) <![CDATA[ <> ]]> 0 then TIMESTAMPDIFF(HOUR, sysdate(), BID_END_DATE) + 1
+		        else TIMESTAMPDIFF(MINUTE, sysdate(), BID_END_DATE) + 1
+		      end REMAINING_TIME
+		    , case
+		        when BID_STATUS = '2' then '-'
+		        when TIMESTAMPDIFF(DAY, sysdate(), BID_END_DATE) <![CDATA[ <> ]]> 0 then '日'
+		        when TIMESTAMPDIFF(HOUR, sysdate(), BID_END_DATE) <![CDATA[ <> ]]> 0 then '時間'
+		        else '分'
+		      end REMAINING_TIME_UNIT
+		    , BID_STATUS
+		    , TASK_KIND
+		    , REAL_STATUS
+		    , DELETE_FLAG
+		    , UPDATE_COUNT
+		    , CREATE_BY
+		    , CREATE_TIME
+		    , UPDATE_BY
+		    , UPDATE_TIME
+		from
+		    T_PRODUCT_BID_INFO
     </sql>
 
     <select id="selectTProductBidInfoList" parameterType="TProductBidInfo" resultMap="TProductBidInfoResult">
         <include refid="selectTProductBidInfoVo"/>
         <where>
-            <if test="productCode != null  and productCode != ''"> and PRODUCT_CODE = #{productCode}</if>
             <if test="productTitle != null  and productTitle != ''"> and PRODUCT_TITLE like concat('%', #{productTitle}, '%')</if>
             <if test="nowPrice != null "> and NOW_PRICE &gt;= #{nowPrice}</if>
             <if test="onholdPrice != null "> and ONHOLD_PRICE = #{onholdPrice}</if>
-            <if test="bidCountdown != null "> and BID_COUNTDOWN = #{bidCountdown}</if>
             <if test="bidStartDate != null "> and BID_START_DATE = #{bidStartDate}</if>
             <if test="bidEndDate != null "> and BID_END_DATE &lt;= #{bidEndDate}</if>
             <if test="bidLastUser != null  and bidLastUser != ''"> and BID_LAST_USER = #{bidLastUser}</if>
@@ -52,13 +82,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="trusteeshipUser2 != null  and trusteeshipUser2 != ''"> and TRUSTEESHIP_USER2 = #{trusteeshipUser2}</if>
             <if test="bidUserCount != null "> and BID_USER_COUNT = #{bidUserCount}</if>
             <if test="remainingTime != null "> and REMAINING_TIME = #{remainingTime}</if>
-            <if test="bidClosingTask != null  and bidClosingTask != ''"> and BID_CLOSING_TASK = #{bidClosingTask}</if>
-            <if test="bidPriceTask != null  and bidPriceTask != ''"> and BID_PRICE_TASK = #{bidPriceTask}</if>
-            <if test="bidTask != null  and bidTask != ''"> and BID_TASK = #{bidTask}</if>
-            <if test="bidStatus != null  and bidStatus != ''"> and BID_STATUS = #{bidStatus}</if>
-            <if test="taskStatus != null  and taskStatus != ''"> and TASK_STATUS = #{taskStatus}</if>
             <if test="remainingTimeUnit != null  and remainingTimeUnit != ''"> and REMAINING_TIME_UNIT = #{remainingTimeUnit}</if>
-            <if test="realTimeStatus != null  and realTimeStatus != ''"> and REAL_TIME_STATUS = #{realTimeStatus}</if>
+            <if test="bidStatus != null  and bidStatus != ''"> and BID_STATUS = #{bidStatus}</if>
+            <if test="taskKind != null  and taskKind != ''"> and TASK_KIND = #{taskKind}</if>
+            <if test="realStatus != null  and realStatus != ''"> and REAL_STATUS = #{realStatus}</if>
             <if test="deleteFlag != null "> and DELETE_FLAG = #{deleteFlag}</if>
             <if test="updateCount != null "> and UPDATE_COUNT = #{updateCount}</if>
             <if test="createBy != null  and createBy != ''"> and CREATE_BY = #{createBy}</if>
@@ -68,33 +95,40 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </where>
     </select>
 
-    <select id="selectOpeningBidList" parameterType="TProductBidInfo" resultMap="TProductBidInfoResult">
-        <include refid="selectTProductBidInfoVo"/>
+    <sql id="whereBidList">
         <where>
             <if test="productCode != null  and productCode != ''"> and PRODUCT_CODE = #{productCode}</if>
-            <if test="productTitle != null  and productTitle != ''"> and PRODUCT_TITLE like concat('%', #{productTitle}, '%')</if>
-            <if test="nowPrice != null "> and NOW_PRICE &gt;= #{nowPrice}</if>
-            <if test="bidEndDate != null "> and BID_END_DATE &lt;= #{bidEndDate}</if>
             <if test="bidStatus != null  and bidStatus != ''"> and (BID_STATUS is null or BID_STATUS <![CDATA[ <> ]]> #{bidStatus})</if>
-            <if test="taskStatus != null  and taskStatus != ''"> and TASK_STATUS = #{taskStatus}</if>
-            <if test="realTimeStatus != null  and realTimeStatus != ''"> and REAL_TIME_STATUS = #{realTimeStatus}</if>
+            <if test="taskKind != null  and taskKind != ''"> and TASK_KIND = #{taskKind}</if>
+            <if test="realStatus != null  and realStatus != ''"> and REAL_STATUS = #{realStatus}</if>
             <if test="deleteFlag != null "> and DELETE_FLAG = #{deleteFlag}</if>
         </where>
-    </select>
+    </sql>
 
-    <select id="selectTProductBidInfoById" parameterType="Integer" resultMap="TProductBidInfoResult">
+    <select id="selectOpeningBidList" parameterType="TProductBidInfo" resultMap="TProductBidInfoResult">
         <include refid="selectTProductBidInfoVo"/>
-        where ID = #{id}
+        <include refid="whereBidList"/>
+        order by BID_STATUS asc, BID_END_DATE asc, PRODUCT_CODE asc
     </select>
 
-    <insert id="insertTProductBidInfo" parameterType="TProductBidInfo" useGeneratedKeys="true" keyProperty="id">
+    <select id="selectWatchingBidList" parameterType="TProductBidInfo" resultMap="TProductBidInfoResult">
+        <include refid="selectWatchingBidListVo"/>
+        <include refid="whereBidList"/>
+        order by BID_STATUS asc, BID_END_DATE asc, PRODUCT_CODE asc
+    </select>
+
+    <select id="selectTProductBidInfoByProductCode" parameterType="String" resultMap="TProductBidInfoResult">
+        <include refid="selectTProductBidInfoVo"/>
+        where PRODUCT_CODE = #{productCode}
+    </select>
+
+    <insert id="insertTProductBidInfo" parameterType="TProductBidInfo">
         insert into T_PRODUCT_BID_INFO
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="productCode != null">PRODUCT_CODE,</if>
             <if test="productTitle != null">PRODUCT_TITLE,</if>
             <if test="nowPrice != null">NOW_PRICE,</if>
             <if test="onholdPrice != null">ONHOLD_PRICE,</if>
-            <if test="bidCountdown != null">BID_COUNTDOWN,</if>
             <if test="bidStartDate != null">BID_START_DATE,</if>
             <if test="bidEndDate != null">BID_END_DATE,</if>
             <if test="bidLastUser != null">BID_LAST_USER,</if>
@@ -102,13 +136,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="trusteeshipUser2 != null">TRUSTEESHIP_USER2,</if>
             <if test="bidUserCount != null">BID_USER_COUNT,</if>
             <if test="remainingTime != null">REMAINING_TIME,</if>
-            <if test="bidClosingTask != null">BID_CLOSING_TASK,</if>
-            <if test="bidPriceTask != null">BID_PRICE_TASK,</if>
-            <if test="bidTask != null">BID_TASK,</if>
-            <if test="bidStatus != null">BID_STATUS,</if>
-            <if test="taskStatus != null">TASK_STATUS,</if>
             <if test="remainingTimeUnit != null">REMAINING_TIME_UNIT,</if>
-            <if test="realTimeStatus != null">REAL_TIME_STATUS,</if>
+            <if test="bidStatus != null">BID_STATUS,</if>
+            <if test="taskKind != null">TASK_KIND,</if>
+            <if test="realStatus != null">REAL_STATUS,</if>
             <if test="deleteFlag != null">DELETE_FLAG,</if>
             <if test="updateCount != null">UPDATE_COUNT,</if>
             <if test="createBy != null">CREATE_BY,</if>
@@ -121,7 +152,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="productTitle != null">#{productTitle},</if>
             <if test="nowPrice != null">#{nowPrice},</if>
             <if test="onholdPrice != null">#{onholdPrice},</if>
-            <if test="bidCountdown != null">#{bidCountdown},</if>
             <if test="bidStartDate != null">#{bidStartDate},</if>
             <if test="bidEndDate != null">#{bidEndDate},</if>
             <if test="bidLastUser != null">#{bidLastUser},</if>
@@ -129,13 +159,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="trusteeshipUser2 != null">#{trusteeshipUser2},</if>
             <if test="bidUserCount != null">#{bidUserCount},</if>
             <if test="remainingTime != null">#{remainingTime},</if>
-            <if test="bidClosingTask != null">#{bidClosingTask},</if>
-            <if test="bidPriceTask != null">#{bidPriceTask},</if>
-            <if test="bidTask != null">#{bidTask},</if>
-            <if test="bidStatus != null">#{bidStatus},</if>
-            <if test="taskStatus != null">#{taskStatus},</if>
             <if test="remainingTimeUnit != null">#{remainingTimeUnit},</if>
-            <if test="realTimeStatus != null">#{realTimeStatus},</if>
+            <if test="bidStatus != null">#{bidStatus},</if>
+            <if test="taskKind != null">#{taskKind},</if>
+            <if test="realStatus != null">#{realStatus},</if>
             <if test="deleteFlag != null">#{deleteFlag},</if>
             <if test="updateCount != null">#{updateCount},</if>
             <if test="createBy != null">#{createBy},</if>
@@ -148,11 +175,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <update id="updateTProductBidInfo" parameterType="TProductBidInfo">
         update T_PRODUCT_BID_INFO
         <trim prefix="SET" suffixOverrides=",">
-            <if test="productCode != null">PRODUCT_CODE = #{productCode},</if>
             <if test="productTitle != null">PRODUCT_TITLE = #{productTitle},</if>
             <if test="nowPrice != null">NOW_PRICE = #{nowPrice},</if>
             <if test="onholdPrice != null">ONHOLD_PRICE = #{onholdPrice},</if>
-            <if test="bidCountdown != null">BID_COUNTDOWN = #{bidCountdown},</if>
             <if test="bidStartDate != null">BID_START_DATE = #{bidStartDate},</if>
             <if test="bidEndDate != null">BID_END_DATE = #{bidEndDate},</if>
             <if test="bidLastUser != null">BID_LAST_USER = #{bidLastUser},</if>
@@ -160,13 +185,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="trusteeshipUser2 != null">TRUSTEESHIP_USER2 = #{trusteeshipUser2},</if>
             <if test="bidUserCount != null">BID_USER_COUNT = #{bidUserCount},</if>
             <if test="remainingTime != null">REMAINING_TIME = #{remainingTime},</if>
-            <if test="bidClosingTask != null">BID_CLOSING_TASK = #{bidClosingTask},</if>
-            <if test="bidPriceTask != null">BID_PRICE_TASK = #{bidPriceTask},</if>
-            <if test="bidTask != null">BID_TASK = #{bidTask},</if>
-            <if test="bidStatus != null">BID_STATUS = #{bidStatus},</if>
-            <if test="taskStatus != null">TASK_STATUS = #{taskStatus},</if>
             <if test="remainingTimeUnit != null">REMAINING_TIME_UNIT = #{remainingTimeUnit},</if>
-            <if test="realTimeStatus != null">REAL_TIME_STATUS = #{realTimeStatus},</if>
+            <if test="bidStatus != null">BID_STATUS = #{bidStatus},</if>
+            <if test="taskKind != null">TASK_KIND = #{taskKind},</if>
+            <if test="realStatus != null">REAL_STATUS = #{realStatus},</if>
             <if test="deleteFlag != null">DELETE_FLAG = #{deleteFlag},</if>
             <if test="updateCount != null">UPDATE_COUNT = #{updateCount},</if>
             <if test="createBy != null">CREATE_BY = #{createBy},</if>
@@ -174,17 +196,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">UPDATE_BY = #{updateBy},</if>
             <if test="updateTime != null">UPDATE_TIME = #{updateTime},</if>
         </trim>
-        where ID = #{id}
+        where PRODUCT_CODE = #{productCode}
     </update>
 
-    <delete id="deleteTProductBidInfoById" parameterType="Integer">
-        delete from T_PRODUCT_BID_INFO where ID = #{id}
+    <delete id="deleteTProductBidInfoByProductCode" parameterType="String">
+        delete from T_PRODUCT_BID_INFO where PRODUCT_CODE = #{productCode}
     </delete>
 
-    <delete id="deleteTProductBidInfoByIds" parameterType="String">
-        delete from T_PRODUCT_BID_INFO where ID in
-        <foreach item="id" collection="array" open="(" separator="," close=")">
-            #{id}
+    <delete id="deleteTProductBidInfoByProductCodes" parameterType="String">
+        delete from T_PRODUCT_BID_INFO where PRODUCT_CODE in
+        <foreach item="productCode" collection="array" open="(" separator="," close=")">
+            #{productCode}
         </foreach>
     </delete>
 </mapper>

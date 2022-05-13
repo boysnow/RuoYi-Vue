@@ -58,32 +58,6 @@ public class ExhibitInfoDTO {
     /** 商品（オークション）の状態（open ：1/出品中、closed ：2/終了、cancelled ：3/オークションの取り消し） */
     private String status;
 
-    public enum BID_STATUS {
-        open("1", "出品中"), closed("2", "終了"), cancelled("3", "取り消し");
-        public String value;
-        public String text;
-        BID_STATUS(String value, String text) {
-            this.value = value;
-            this.text = text;
-        }
-        public static String getText(String value) {
-            for (BID_STATUS status : BID_STATUS.values()) {
-                if (status.value.equals(value)) {
-                    return status.text;
-                }
-            }
-            return null;
-        }
-        public static String getValue(String name) {
-            for (BID_STATUS status : BID_STATUS.values()) {
-                if (status.name().equals(name)) {
-                    return status.value;
-                }
-            }
-            return null;
-        }
-    }
-
     public enum REMAINING_TIME_UNIT {
         MINUTE("1", "分"), HOUR("2", "時間"), DAY("3", "日");
 

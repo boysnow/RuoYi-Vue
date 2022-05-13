@@ -13,17 +13,13 @@ import com.ruoyi.common.core.domain.BaseEntity;
  * 商品入札情報对象 T_PRODUCT_BID_INFO
  *
  * @author ruoyi
- * @date 2022-05-10
+ * @date 2022-05-12
  */
 public class TProductBidInfo extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** ID */
-    private Integer id;
-
     /** 商品コード */
-    @Excel(name = "商品コード")
     private String productCode;
 
     /** 商品タイトル */
@@ -37,10 +33,6 @@ public class TProductBidInfo extends BaseEntity
     /** 保留価格 */
     @Excel(name = "保留価格")
     private BigDecimal onholdPrice;
-
-    /** 入札カウントダウン */
-    @Excel(name = "入札カウントダウン")
-    private Integer bidCountdown;
 
     /** 入札開始日時 */
 //    @JsonFormat(pattern = "yyyy-MM-dd")
@@ -56,12 +48,12 @@ public class TProductBidInfo extends BaseEntity
     @Excel(name = "最後入札者")
     private String bidLastUser;
 
-    /** 托管ユーザ１ */
-    @Excel(name = "托管ユーザ１")
+    /** 入札ユーザ１ */
+    @Excel(name = "入札ユーザ１")
     private String trusteeshipUser1;
 
-    /** 托管ユーザ２ */
-    @Excel(name = "托管ユーザ２")
+    /** 入札ユーザ２ */
+    @Excel(name = "入札ユーザ２")
     private String trusteeshipUser2;
 
     /** 入札人数 */
@@ -70,45 +62,24 @@ public class TProductBidInfo extends BaseEntity
 
     /** 残時間 */
     @Excel(name = "残時間")
-    private Long remainingTime;
-
-    /** 入札停止任務 */
-    @Excel(name = "入札停止任務")
-    private String bidClosingTask;
-
-    /** 価格任務 */
-    @Excel(name = "価格任務")
-    private String bidPriceTask;
-
-    /** 入札任務 */
-    @Excel(name = "入札任務")
-    private String bidTask;
-
-    /** 入札状態 */
-    @Excel(name = "入札状態")
-    private String bidStatus;
-
-    /** 任務状態 */
-    @Excel(name = "任務状態")
-    private String taskStatus;
+    private Integer remainingTime;
 
     /** 残時間単位 */
     @Excel(name = "残時間単位")
     private String remainingTimeUnit;
 
+    /** 入札状態 */
+    @Excel(name = "入札状態")
+    private String bidStatus;
+
+    /** 任務区分 */
+    @Excel(name = "任務区分")
+    private String taskKind;
+
     /** リアルステータス */
     @Excel(name = "リアルステータス")
-    private String realTimeStatus;
+    private String realStatus;
 
-    public void setId(Integer id)
-    {
-        this.id = id;
-    }
-
-    public Integer getId()
-    {
-        return id;
-    }
     public void setProductCode(String productCode)
     {
         this.productCode = productCode;
@@ -144,15 +115,6 @@ public class TProductBidInfo extends BaseEntity
     public BigDecimal getOnholdPrice()
     {
         return onholdPrice;
-    }
-    public void setBidCountdown(Integer bidCountdown)
-    {
-        this.bidCountdown = bidCountdown;
-    }
-
-    public Integer getBidCountdown()
-    {
-        return bidCountdown;
     }
     public void setBidStartDate(Date bidStartDate)
     {
@@ -208,59 +170,14 @@ public class TProductBidInfo extends BaseEntity
     {
         return bidUserCount;
     }
-    public void setRemainingTime(Long remainingTime)
+    public void setRemainingTime(Integer remainingTime)
     {
         this.remainingTime = remainingTime;
     }
 
-    public Long getRemainingTime()
+    public Integer getRemainingTime()
     {
         return remainingTime;
-    }
-    public void setBidClosingTask(String bidClosingTask)
-    {
-        this.bidClosingTask = bidClosingTask;
-    }
-
-    public String getBidClosingTask()
-    {
-        return bidClosingTask;
-    }
-    public void setBidPriceTask(String bidPriceTask)
-    {
-        this.bidPriceTask = bidPriceTask;
-    }
-
-    public String getBidPriceTask()
-    {
-        return bidPriceTask;
-    }
-    public void setBidTask(String bidTask)
-    {
-        this.bidTask = bidTask;
-    }
-
-    public String getBidTask()
-    {
-        return bidTask;
-    }
-    public void setBidStatus(String bidStatus)
-    {
-        this.bidStatus = bidStatus;
-    }
-
-    public String getBidStatus()
-    {
-        return bidStatus;
-    }
-    public void setTaskStatus(String taskStatus)
-    {
-        this.taskStatus = taskStatus;
-    }
-
-    public String getTaskStatus()
-    {
-        return taskStatus;
     }
     public void setRemainingTimeUnit(String remainingTimeUnit)
     {
@@ -271,25 +188,41 @@ public class TProductBidInfo extends BaseEntity
     {
         return remainingTimeUnit;
     }
-    public void setRealTimeStatus(String realTimeStatus)
+    public void setBidStatus(String bidStatus)
     {
-        this.realTimeStatus = realTimeStatus;
+        this.bidStatus = bidStatus;
     }
 
-    public String getRealTimeStatus()
+    public String getBidStatus()
     {
-        return realTimeStatus;
+        return bidStatus;
+    }
+    public void setTaskKind(String taskKind)
+    {
+        this.taskKind = taskKind;
+    }
+
+    public String getTaskKind()
+    {
+        return taskKind;
+    }
+    public void setRealStatus(String realStatus)
+    {
+        this.realStatus = realStatus;
+    }
+
+    public String getRealStatus()
+    {
+        return realStatus;
     }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
-            .append("id", getId())
             .append("productCode", getProductCode())
             .append("productTitle", getProductTitle())
             .append("nowPrice", getNowPrice())
             .append("onholdPrice", getOnholdPrice())
-            .append("bidCountdown", getBidCountdown())
             .append("bidStartDate", getBidStartDate())
             .append("bidEndDate", getBidEndDate())
             .append("bidLastUser", getBidLastUser())
@@ -297,13 +230,10 @@ public class TProductBidInfo extends BaseEntity
             .append("trusteeshipUser2", getTrusteeshipUser2())
             .append("bidUserCount", getBidUserCount())
             .append("remainingTime", getRemainingTime())
-            .append("bidClosingTask", getBidClosingTask())
-            .append("bidPriceTask", getBidPriceTask())
-            .append("bidTask", getBidTask())
-            .append("bidStatus", getBidStatus())
-            .append("taskStatus", getTaskStatus())
             .append("remainingTimeUnit", getRemainingTimeUnit())
-            .append("realTimeStatus", getRealTimeStatus())
+            .append("bidStatus", getBidStatus())
+            .append("taskKind", getTaskKind())
+            .append("realStatus", getRealStatus())
             .append("deleteFlag", getDeleteFlag())
             .append("updateCount", getUpdateCount())
             .append("createBy", getCreateBy())

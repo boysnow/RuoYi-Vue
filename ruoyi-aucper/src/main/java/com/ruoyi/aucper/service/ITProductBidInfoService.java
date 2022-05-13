@@ -8,17 +8,17 @@ import com.ruoyi.aucper.domain.TProductBidInfo;
  * 商品入札情報Service接口
  *
  * @author ruoyi
- * @date 2022-05-06
+ * @date 2022-05-12
  */
 public interface ITProductBidInfoService
 {
     /**
      * 查询商品入札情報
      *
-     * @param id 商品入札情報主键
+     * @param productCode 商品入札情報主键
      * @return 商品入札情報
      */
-    public TProductBidInfo selectTProductBidInfoById(Integer id);
+    public TProductBidInfo selectTProductBidInfoByProductCode(String productCode);
 
     /**
      * 查询商品入札情報列表
@@ -47,24 +47,32 @@ public interface ITProductBidInfoService
     /**
      * 批量删除商品入札情報
      *
-     * @param ids 需要删除的商品入札情報主键集合
+     * @param productCodes 需要删除的商品入札情報主键集合
      * @return 结果
      */
-    public int deleteTProductBidInfoByIds(Integer[] ids);
+    public int deleteTProductBidInfoByProductCodes(String[] productCodes);
 
     /**
      * 删除商品入札情報信息
      *
-     * @param id 商品入札情報主键
+     * @param productCode 商品入札情報主键
      * @return 结果
      */
-    public int deleteTProductBidInfoById(Integer id);
+    public int deleteTProductBidInfoByProductCode(String productCode);
 
     /**
-     * 查询商品入札情報列表
+     * 開催中入札情報取得
      *
      * @param tProductBidInfo 商品入札情報
      * @return 商品入札情報集合
      */
     public List<TProductBidInfo> selectOpeningBidList(TProductBidInfo tProductBidInfo);
+
+    /**
+     * 入札情報取得（画面監視用）
+     *
+     * @param tProductBidInfo 商品入札情報
+     * @return 商品入札情報集合
+     */
+    public List<TProductBidInfo> selectWatchingBidList(TProductBidInfo tProductBidInfo);
 }

@@ -8,12 +8,13 @@ import org.springframework.stereotype.Service;
 import com.ruoyi.aucper.domain.TProductBidInfo;
 import com.ruoyi.aucper.mapper.TProductBidInfoMapper;
 import com.ruoyi.aucper.service.ITProductBidInfoService;
+import com.ruoyi.common.utils.DateUtils;
 
 /**
  * 商品入札情報Service业务层处理
  *
  * @author ruoyi
- * @date 2022-05-06
+ * @date 2022-05-12
  */
 @Service
 public class TProductBidInfoServiceImpl implements ITProductBidInfoService
@@ -24,13 +25,13 @@ public class TProductBidInfoServiceImpl implements ITProductBidInfoService
     /**
      * 查询商品入札情報
      *
-     * @param id 商品入札情報主键
+     * @param productCode 商品入札情報主键
      * @return 商品入札情報
      */
     @Override
-    public TProductBidInfo selectTProductBidInfoById(Integer id)
+    public TProductBidInfo selectTProductBidInfoByProductCode(String productCode)
     {
-        return tProductBidInfoMapper.selectTProductBidInfoById(id);
+        return tProductBidInfoMapper.selectTProductBidInfoByProductCode(productCode);
     }
 
     /**
@@ -54,6 +55,7 @@ public class TProductBidInfoServiceImpl implements ITProductBidInfoService
     @Override
     public int insertTProductBidInfo(TProductBidInfo tProductBidInfo)
     {
+        tProductBidInfo.setCreateTime(DateUtils.getNowDate());
         return tProductBidInfoMapper.insertTProductBidInfo(tProductBidInfo);
     }
 
@@ -66,35 +68,36 @@ public class TProductBidInfoServiceImpl implements ITProductBidInfoService
     @Override
     public int updateTProductBidInfo(TProductBidInfo tProductBidInfo)
     {
+        tProductBidInfo.setUpdateTime(DateUtils.getNowDate());
         return tProductBidInfoMapper.updateTProductBidInfo(tProductBidInfo);
     }
 
     /**
      * 批量删除商品入札情報
      *
-     * @param ids 需要删除的商品入札情報主键
+     * @param productCodes 需要删除的商品入札情報主键
      * @return 结果
      */
     @Override
-    public int deleteTProductBidInfoByIds(Integer[] ids)
+    public int deleteTProductBidInfoByProductCodes(String[] productCodes)
     {
-        return tProductBidInfoMapper.deleteTProductBidInfoByIds(ids);
+        return tProductBidInfoMapper.deleteTProductBidInfoByProductCodes(productCodes);
     }
 
     /**
      * 删除商品入札情報信息
      *
-     * @param id 商品入札情報主键
+     * @param productCode 商品入札情報主键
      * @return 结果
      */
     @Override
-    public int deleteTProductBidInfoById(Integer id)
+    public int deleteTProductBidInfoByProductCode(String productCode)
     {
-        return tProductBidInfoMapper.deleteTProductBidInfoById(id);
+        return tProductBidInfoMapper.deleteTProductBidInfoByProductCode(productCode);
     }
 
     /**
-     * 查询商品入札情報列表
+     * 開催中入札情報取得
      *
      * @param tProductBidInfo 商品入札情報
      * @return 商品入札情報
@@ -103,5 +106,17 @@ public class TProductBidInfoServiceImpl implements ITProductBidInfoService
     public List<TProductBidInfo> selectOpeningBidList(TProductBidInfo tProductBidInfo)
     {
         return tProductBidInfoMapper.selectOpeningBidList(tProductBidInfo);
+    }
+
+    /**
+     * 入札情報取得（画面監視用）
+     *
+     * @param tProductBidInfo 商品入札情報
+     * @return 商品入札情報
+     */
+    @Override
+    public List<TProductBidInfo> selectWatchingBidList(TProductBidInfo tProductBidInfo)
+    {
+        return tProductBidInfoMapper.selectWatchingBidList(tProductBidInfo);
     }
 }
