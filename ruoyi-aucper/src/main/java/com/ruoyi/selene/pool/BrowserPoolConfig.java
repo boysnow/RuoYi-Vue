@@ -12,7 +12,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Scope;
 
+import com.ruoyi.selene.config.SeleneConifg;
+
 @Configuration
+@DependsOn("seleneConifg")
 public class BrowserPoolConfig {
 
     @Bean(name = "webDriver")
@@ -34,12 +37,11 @@ public class BrowserPoolConfig {
     }
 
     @Bean(name = "poolTargetSourceWebDriver", initMethod = "initializeObjects")
-    @DependsOn("seleneConifg")
     WebDriverObjectPool makeWebDriverPool() {
         WebDriverObjectPool pool = new WebDriverObjectPool();
-        pool.setMaxSize(5);
         pool.setTargetClass(WebDriver.class);
-        pool.setMinIdle(5);
+        pool.setMaxSize(SeleneConifg.getMaxSize());
+        pool.setMinIdle(SeleneConifg.getMinIdle());
         pool.setTargetBeanName("webDriver");
         return pool;
     }
