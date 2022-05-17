@@ -54,7 +54,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		        when BID_STATUS = '2' then '-'
 		        when TIMESTAMPDIFF(DAY, sysdate(), BID_END_DATE) <![CDATA[ <> ]]> 0 then '日'
 		        when TIMESTAMPDIFF(HOUR, sysdate(), BID_END_DATE) <![CDATA[ <> ]]> 0 then '時間'
-		        else '分'
+		        when TIMESTAMPDIFF(MINUTE, sysdate(), BID_END_DATE) <![CDATA[ <> ]]> 0 then '分'
+		        else ''
 		      end REMAINING_TIME_UNIT
 		    , BID_STATUS
 		    , TASK_KIND

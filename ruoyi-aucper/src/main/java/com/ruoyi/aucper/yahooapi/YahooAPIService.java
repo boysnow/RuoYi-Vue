@@ -180,9 +180,9 @@ public class YahooAPIService {
     		}
 
     		// 最高額入札者のID
-    		this.getBidder(exhibitInfoDTO);
+    		boolean bidderResult = this.getBidder(exhibitInfoDTO);
     		// 取得できなかった場合、ログインしてから再取得
-    		if (StringUtils.isEmpty(exhibitInfoDTO.getHighestBiddersBidderId())) {
+    		if (!bidderResult) {
     			logger.info("ログインして最高額入札者を再取得する[" + id + "]");
     			this.login();
         		open(config.getBaseUrl() + id);
@@ -224,7 +224,7 @@ public class YahooAPIService {
 		}
 	}
 
-    private void getBidder(ExhibitInfoDTO exhibitInfoDTO) {
+    private boolean getBidder(ExhibitInfoDTO exhibitInfoDTO) {
 
 		String keyText = "最高額入札者";
 		if (BidStatus.closed.value.equals(exhibitInfoDTO.getStatus())) {
@@ -234,21 +234,32 @@ public class YahooAPIService {
 		SelenideElement element = $x("//ul[contains(@class, 'ProductDetail__items--secondary')]/li/dl/dt[text()='" + keyText + "']");
 		if (element.exists()) {
 			SelenideElement bidderElment = element.parent().find("dd.ProductDetail__description");
-			if (bidderElment.getText() != null && bidderElment.getText().contains("なし")) {
-				return;
+			if (StringUtils.isEmpty(bidderElment.getText())) {
+				return true;
 			}
-			// 「：c*e*f*** / 評価 26459」
-			String regex = "^：(.+) / 評価 (\\d+)$";
+			if (bidderElment.getText().contains("なし")) {
+				return true;
+			}
+			if (bidderElment.getText().contains("ログインして確認")) {
+				// 未ログインの為、再ログインするよう「false」を返す
+				return false;
+			}
+
+			// 通常の場合、「：c*e*f*** / 評価 26459」
+			// 新規の場合、「：c*e*f*** / 新規」
+			String regex = "^：(.+) / (評価|新規) ?(\\d*)$";
 			Pattern pattern = Pattern.compile(regex);
 			Matcher matcher = pattern.matcher(bidderElment.getText());
 			if(matcher.find()) {
 				exhibitInfoDTO.setHighestBiddersBidderId(matcher.group(1));
-				String point = matcher.group(2);
+				String point = matcher.group(3);
 				if (StringUtils.isNotEmpty(point)) {
 					exhibitInfoDTO.setHighestBiddersBidderRatingPoint(NumberUtils.toInt(point));
 				}
+				return true;
 	        }
 		}
+		return true;
     }
 
 	private void updateTProductBidInfo(ExhibitInfoDTO exhibitInfoDTO) {
@@ -257,28 +268,27 @@ public class YahooAPIService {
 		TProductBidInfo bidInfo = tProductBidInfoMapper.selectTProductBidInfoByProductCode(exhibitInfoDTO.getAuctionID());
 		boolean existFlag = true;
 		if (bidInfo == null) {
-			bidInfo = new TProductBidInfo();
 			existFlag = false;
 		}
+		// 必要な項目のみ更新するため、その対象のみ設定する
+		bidInfo = new TProductBidInfo();
 
 		bidInfo.setProductCode(exhibitInfoDTO.getAuctionID());
 		bidInfo.setProductTitle(exhibitInfoDTO.getTitle());
 		bidInfo.setNowPrice(exhibitInfoDTO.getPrice());
-		bidInfo.setOnholdPrice(exhibitInfoDTO.getInsideBidorbuy());
 		bidInfo.setBidStartDate(exhibitInfoDTO.getStartDate());
 		bidInfo.setBidEndDate(exhibitInfoDTO.getEndDate());
 		bidInfo.setBidLastUser(exhibitInfoDTO.getHighestBiddersBidderId());
-		bidInfo.setTrusteeshipUser1(null);
-		bidInfo.setTrusteeshipUser2(null);
 		bidInfo.setBidUserCount(exhibitInfoDTO.getBids());
 		bidInfo.setBidStatus(exhibitInfoDTO.getStatus());
 		bidInfo.setRealStatus(RealStatus.Watching.value);
 
+		Date nowTime = com.ruoyi.common.utils.DateUtils.getNowDate();
 		if (existFlag) {
 			bidInfo.setUpdateTime(com.ruoyi.common.utils.DateUtils.getNowDate());
+			bidInfo.setUpdateTime(nowTime);
 			tProductBidInfoMapper.updateTProductBidInfo(bidInfo);
 		} else {
-			Date nowTime = com.ruoyi.common.utils.DateUtils.getNowDate();
 			bidInfo.setCreateTime(nowTime);
 			bidInfo.setUpdateTime(nowTime);
 			tProductBidInfoMapper.insertTProductBidInfo(bidInfo);

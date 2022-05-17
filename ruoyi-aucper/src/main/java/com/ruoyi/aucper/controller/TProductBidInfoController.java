@@ -98,7 +98,14 @@ public class TProductBidInfoController extends BaseController
     @PutMapping
     public AjaxResult edit(@RequestBody TProductBidInfo tProductBidInfo)
     {
-        return toAjax(tProductBidInfoService.updateTProductBidInfo(tProductBidInfo));
+    	// 更新対象項目の再設定
+    	TProductBidInfo info = new TProductBidInfo();
+    	info.setProductCode(tProductBidInfo.getProductCode());
+    	info.setTaskKind(tProductBidInfo.getTaskKind());
+    	info.setOnholdPrice(tProductBidInfo.getOnholdPrice());
+    	info.setTrusteeshipUser1(tProductBidInfo.getTrusteeshipUser1());
+    	info.setTrusteeshipUser2(tProductBidInfo.getTrusteeshipUser2());
+        return toAjax(tProductBidInfoService.updateTProductBidInfo(info));
     }
 
     /**
