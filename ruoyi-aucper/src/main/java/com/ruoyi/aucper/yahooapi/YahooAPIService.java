@@ -15,15 +15,18 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.target.CommonsPool2TargetSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.WebDriverRunner;
 import com.ruoyi.aucper.config.YahooAuctionConifg;
@@ -55,11 +58,11 @@ public class YahooAPIService {
 	private static final String FMT_DATE_HTML = "yyyy.MM.dd（E）HH:mm";
 
     @Autowired
-//    @Qualifier("poolTargetSourceWebDriver")
+    @Qualifier("poolTargetSourceWebDriver")
     private CommonsPool2TargetSource poolTargetSourceWebDriver;
 
     @Async("webDriverTaskExecutor")
-	public ExhibitInfoDTO getExhibitInfoById(String id) {
+	public void getExhibitInfoById(String id) {
 
     	WebDriver webDriver = null;
     	try {
@@ -67,8 +70,8 @@ public class YahooAPIService {
     		WebDriverRunner.setWebDriver(webDriver);
 
     		/**
-    		 * 上記でプールからWebDriverオブジェクトを取得する為に待機する
-    		 * その為、開始ログや更新処理などをここ以降に実装する
+    		 * 上記でプールからWebDriverオブジェクトを取得する為に時間が要する為
+    		 * 開始ログや更新処理などをここ以降に実装する
     		 */
     		logger.info("@@@@@@@@ Get exhibit info by [" + id + "] - START");
 
@@ -86,9 +89,6 @@ public class YahooAPIService {
 
     		boolean existJson = true;
     		Map<String, Map<String, String>> pageData = executeJavaScript("return pageData;");
-//    		Object pageData = executeJavaScript("return pageData;");
-//    		System.out.println("pageData");
-//    		System.out.println(pageData.get("items"));
 
     		try {
     			Map<String, String> items = pageData.get("items");
@@ -123,8 +123,7 @@ public class YahooAPIService {
     			}
 
     		} catch (Exception e) {
-    			System.out.println(e);
-    			e.printStackTrace();
+    			logger.warn("Failed to get bidinfo by json pageData.", e);
     			existJson = false;
     		}
 
@@ -172,8 +171,6 @@ public class YahooAPIService {
     			}
     			// 状態
     			String statusStr = $(".Count__count--sideLine .Count__number").getText();
-    			System.out.println("@@@@@@@@@@@@@@@@@@@@@");
-    			System.out.println(statusStr);
     			exhibitInfoDTO.setStatus(BidStatus.open.value);
     			if (StringUtils.isNotEmpty(statusStr) && statusStr.startsWith(BidStatus.closed.text)) {
     				exhibitInfoDTO.setStatus(BidStatus.closed.value);
@@ -183,40 +180,28 @@ public class YahooAPIService {
     		}
 
     		// 最高額入札者のID
-    		String keyText = "最高額入札者";
-    		if (BidStatus.closed.value.equals(exhibitInfoDTO.getStatus())) {
-    			keyText = "落札者";
+    		this.getBidder(exhibitInfoDTO);
+    		// 取得できなかった場合、ログインしてから再取得
+    		if (StringUtils.isEmpty(exhibitInfoDTO.getHighestBiddersBidderId())) {
+    			logger.info("ログインして最高額入札者を再取得する[" + id + "]");
+    			this.login();
+        		open(config.getBaseUrl() + id);
+        		this.getBidder(exhibitInfoDTO);
     		}
 
-    		SelenideElement element = $x("//ul[contains(@class, 'ProductDetail__items--secondary')]/li/dl/dt[text()='" + keyText + "']");
-    		if (element.exists()) {
-    			SelenideElement bidderElment = element.parent().find("dd.ProductDetail__description");
-    			// 「：c*e*f*** / 評価 26459」
-    			String regex = "^：(.+) / (\\d+)$";
-    			Pattern pattern = Pattern.compile(regex);
-    			Matcher matcher = pattern.matcher(bidderElment.getText());
-    			if(matcher.find()) {
-    				exhibitInfoDTO.setHighestBiddersBidderId(matcher.group(1));
-    				String point = matcher.group(2);
-    				if (StringUtils.isNotEmpty(point)) {
-    					exhibitInfoDTO.setHighestBiddersBidderRatingPoint(NumberUtils.toInt(point));
-    				}
-    	        }
-    		}
-
-    		// 出品者のID
-    		exhibitInfoDTO.setSellerId($(".Seller__name a").text());
-    		// 出品者の評価ポイント
-    		Integer ratingPoint = 0;
-    		try {
-//    			ratingPoint = NumberUtils.parseNumber($(".Seller__ratingSum a").text().trim(), Integer.class);
-    		} catch (Exception e) {
-    		}
-    		exhibitInfoDTO.setSellerRatingPoint(ratingPoint);
+//    		// 出品者のID
+//    		exhibitInfoDTO.setSellerId($(".Seller__name a").text());
+//    		// 出品者の評価ポイント
+//    		Integer ratingPoint = 0;
+//    		try {
+//    			ratingPoint = NumberUtils.toInt($(".Seller__ratingSum a").text().trim());
+//    		} catch (Exception e) {
+//    		}
+//    		exhibitInfoDTO.setSellerRatingPoint(ratingPoint);
 
 
-//    		Selenide.closeWebDriver();
-
+    		// WebDriverの使用終わった後クローズ
+    		//Selenide.closeWebDriver();
 
 
 
@@ -224,23 +209,47 @@ public class YahooAPIService {
     		System.out.println(exhibitInfoDTO.toString());
 
 
-
     		this.updateTProductBidInfo(exhibitInfoDTO);
 
     		logger.info("@@@@@@@@ Get exhibit info by [" + id + "] - END");
 
-
     	} catch (Exception e1) {
-			e1.printStackTrace();
-		} finally {
+    		logger.error("Failed to get get exhibit info.[" + id + "]", e1);
+    	} finally {
             try {
 				poolTargetSourceWebDriver.releaseTarget(webDriver);
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("Failed to release web driver.", e);
 			}
 		}
-		return null;
 	}
+
+    private void getBidder(ExhibitInfoDTO exhibitInfoDTO) {
+
+		String keyText = "最高額入札者";
+		if (BidStatus.closed.value.equals(exhibitInfoDTO.getStatus())) {
+			keyText = "落札者";
+		}
+
+		SelenideElement element = $x("//ul[contains(@class, 'ProductDetail__items--secondary')]/li/dl/dt[text()='" + keyText + "']");
+		if (element.exists()) {
+			SelenideElement bidderElment = element.parent().find("dd.ProductDetail__description");
+			if (bidderElment.getText() != null && bidderElment.getText().contains("なし")) {
+				return;
+			}
+			// 「：c*e*f*** / 評価 26459」
+			String regex = "^：(.+) / 評価 (\\d+)$";
+			Pattern pattern = Pattern.compile(regex);
+			Matcher matcher = pattern.matcher(bidderElment.getText());
+			if(matcher.find()) {
+				exhibitInfoDTO.setHighestBiddersBidderId(matcher.group(1));
+				String point = matcher.group(2);
+				if (StringUtils.isNotEmpty(point)) {
+					exhibitInfoDTO.setHighestBiddersBidderRatingPoint(NumberUtils.toInt(point));
+				}
+	        }
+		}
+    }
 
 	private void updateTProductBidInfo(ExhibitInfoDTO exhibitInfoDTO) {
 
@@ -274,6 +283,23 @@ public class YahooAPIService {
 			bidInfo.setUpdateTime(nowTime);
 			tProductBidInfoMapper.insertTProductBidInfo(bidInfo);
 		}
+	}
+
+	public void login() {
+
+		Selenide.open(config.getLoginUrl());
+
+		SelenideElement username = Selenide.$(By.id("username"));
+		System.out.println("@@@@@@@@@@@@@@@@@@@@ 22");
+		System.out.println(username.isDisplayed());
+		if (username.isDisplayed()) {
+			username.val("buyee05");
+			Selenide.$(By.id("btnNext")).click();
+		}
+
+		Selenide.$(By.id("passwd")).val("a8621jp");
+		Selenide.$(By.id("btnSubmit")).click();
+
 	}
 
 }

@@ -11,9 +11,13 @@ public class YahooAuctionConifg {
 	@Value("${base.url}")
     private String baseUrl;
 
-
+	@Value("${login.url}")
+    private String loginUrl;
 
 	public String getBaseUrl() {
 		return this.baseUrl;
+	}
+	public String getLoginUrl() {
+		return loginUrl;
 	}
 }
