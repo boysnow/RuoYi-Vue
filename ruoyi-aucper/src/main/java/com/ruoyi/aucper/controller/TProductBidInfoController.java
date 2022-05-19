@@ -18,8 +18,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ruoyi.aucper.config.YahooAuctionConifg;
+import com.ruoyi.aucper.constant.RealStatus;
 import com.ruoyi.aucper.domain.TProductBidInfo;
 import com.ruoyi.aucper.service.ITProductBidInfoService;
+import com.ruoyi.aucper.yahooapi.StatusService;
+import com.ruoyi.aucper.yahooapi.YahooAPIService;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -42,6 +45,12 @@ public class TProductBidInfoController extends BaseController
 
     @Autowired
     private YahooAuctionConifg config;
+
+    @Autowired
+    private YahooAPIService yahooAPIService;
+
+    @Autowired
+    private StatusService statusService;
 
     /**
      * 查询商品入札情報列表
@@ -128,5 +137,20 @@ public class TProductBidInfoController extends BaseController
     	Map<String, String> data = new HashMap<>();
     	data.put("baseUrl", config.getBaseUrl());
         return AjaxResult.success(data);
+    }
+
+    /**
+     * 商品入札情報の強制更新
+     */
+    @PreAuthorize("@ss.hasPermi('aucper:bid:edit')")
+    @Log(title = "商品入札情報の最新情報取得", businessType = BusinessType.UPDATE)
+    @PutMapping("/{productCodes}/force")
+    public AjaxResult forcedUpdateBidInfo(@PathVariable String[] productCodes)
+    {
+    	for (String code : productCodes) {
+    		statusService.updateRealStatus(code, RealStatus.Updating);
+        	yahooAPIService.getExhibitInfoById(code);
+    	}
+        return AjaxResult.success();
     }
 }

@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ruoyi.aucper.constant.BidStatus;
+import com.ruoyi.aucper.constant.RemainingTimeUnit;
 import com.ruoyi.aucper.domain.TProductBidInfo;
 import com.ruoyi.aucper.service.ITProductBidInfoService;
+import com.ruoyi.common.exception.job.TaskException;
 
 @Service
 public class YahooAPI {
@@ -21,24 +23,29 @@ public class YahooAPI {
     @Autowired
     private ITProductBidInfoService tProductBidInfoService;
 
-	public void getAllProduct() {
+	public void updateBidInfo(String params) throws TaskException {
 
-		logger.info("getAllProduct begin.");
+		logger.info("update bid info begin.");
+
+		// 実行Noにより実行単位を取得
+		RemainingTimeUnit unit = RemainingTimeUnit.getByVal(params);
 
 		TProductBidInfo cond = new TProductBidInfo();
 		cond.setDeleteFlag(false);
 		cond.setBidStatus(BidStatus.closed.value);
+		if (unit != null) {
+			cond.setRemainingTime(unit.remainingTime);
+			cond.setRemainingTimeUnit(unit.remainingTimeUnit);
+		}
 		List<TProductBidInfo> list = tProductBidInfoService.selectOpeningBidList(cond);
-		if (list.size() == 0) {
-			return;
+		if (list.size() > 0) {
+			for (TProductBidInfo info : list) {
+				yahooAPIService.getExhibitInfoById(info.getProductCode());
+				logger.info("add queue [{}]", info.getProductCode());
+			}
 		}
 
-		for (TProductBidInfo info : list) {
-			yahooAPIService.getExhibitInfoById(info.getProductCode());
-			logger.info("add queue [{}]", info.getProductCode());
-		}
-
-		logger.info("getAllProduct end.");
+		logger.info("update bid info end.");
 	}
 
 	public static void main(String args[]) {
