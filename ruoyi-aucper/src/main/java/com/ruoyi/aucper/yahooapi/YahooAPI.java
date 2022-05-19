@@ -25,7 +25,7 @@ public class YahooAPI {
 
 	public void updateBidInfo(String params) throws TaskException {
 
-		logger.info("update bid info begin.");
+		logger.info("update bid info begin.[{}]", params);
 
 		// 実行Noにより実行単位を取得
 		RemainingTimeUnit unit = RemainingTimeUnit.getByVal(params);
