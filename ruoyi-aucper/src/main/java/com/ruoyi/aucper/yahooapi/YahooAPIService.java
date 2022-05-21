@@ -281,6 +281,7 @@ public class YahooAPIService {
 		bidInfo.setBidLastUser(exhibitInfoDTO.getHighestBiddersBidderId());
 		bidInfo.setBidUserCount(exhibitInfoDTO.getBids());
 		bidInfo.setBidStatus(exhibitInfoDTO.getStatus());
+		bidInfo.setRealStatus("");
 		if (BidStatus.open.value.equals(bidInfo.getBidStatus())) {
 			bidInfo.setRealStatus(RealStatus.Watching.value);
 		}

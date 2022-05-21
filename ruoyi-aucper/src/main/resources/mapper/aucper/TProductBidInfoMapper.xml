@@ -7,6 +7,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <resultMap type="TProductBidInfo" id="TProductBidInfoResult">
         <result property="productCode"    column="PRODUCT_CODE"    />
         <result property="productTitle"    column="PRODUCT_TITLE"    />
+        <result property="category"    column="CATEGORY"    />
         <result property="nowPrice"    column="NOW_PRICE"    />
         <result property="onholdPrice"    column="ONHOLD_PRICE"    />
         <result property="bidStartDate"    column="BID_START_DATE"    />
@@ -20,6 +21,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="bidStatus"    column="BID_STATUS"    />
         <result property="taskKind"    column="TASK_KIND"    />
         <result property="realStatus"    column="REAL_STATUS"    />
+        <result property="remark"    column="REMARK"    />
         <result property="deleteFlag"    column="DELETE_FLAG"    />
         <result property="updateCount"    column="UPDATE_COUNT"    />
         <result property="createBy"    column="CREATE_BY"    />
@@ -29,7 +31,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectTProductBidInfoVo">
-        select PRODUCT_CODE, PRODUCT_TITLE, NOW_PRICE, ONHOLD_PRICE, BID_START_DATE, BID_END_DATE, BID_LAST_USER, TRUSTEESHIP_USER1, TRUSTEESHIP_USER2, BID_USER_COUNT, REMAINING_TIME, REMAINING_TIME_UNIT, BID_STATUS, TASK_KIND, REAL_STATUS, DELETE_FLAG, UPDATE_COUNT, CREATE_BY, CREATE_TIME, UPDATE_BY, UPDATE_TIME from T_PRODUCT_BID_INFO
+        select PRODUCT_CODE, PRODUCT_TITLE, NOW_PRICE, ONHOLD_PRICE, BID_START_DATE, BID_END_DATE, BID_LAST_USER, TRUSTEESHIP_USER1, TRUSTEESHIP_USER2, BID_USER_COUNT, REMAINING_TIME, REMAINING_TIME_UNIT, BID_STATUS, TASK_KIND, REAL_STATUS, REMARK, DELETE_FLAG, UPDATE_COUNT, CREATE_BY, CREATE_TIME, UPDATE_BY, UPDATE_TIME from T_PRODUCT_BID_INFO
     </sql>
 
     <sql id="selectWatchingBidListVo">
@@ -60,6 +62,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		    , BID_STATUS
 		    , TASK_KIND
 		    , REAL_STATUS
+		    , REMARK
 		    , DELETE_FLAG
 		    , UPDATE_COUNT
 		    , CREATE_BY
@@ -87,6 +90,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="bidStatus != null  and bidStatus != ''"> and BID_STATUS = #{bidStatus}</if>
             <if test="taskKind != null  and taskKind != ''"> and TASK_KIND = #{taskKind}</if>
             <if test="realStatus != null  and realStatus != ''"> and REAL_STATUS = #{realStatus}</if>
+            <if test="remark != null  and remark != ''"> and REMARK = #{remark}</if>
             <if test="deleteFlag != null "> and DELETE_FLAG = #{deleteFlag}</if>
             <if test="updateCount != null "> and UPDATE_COUNT = #{updateCount}</if>
             <if test="createBy != null  and createBy != ''"> and CREATE_BY = #{createBy}</if>
@@ -131,6 +135,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="productCode != null">PRODUCT_CODE,</if>
             <if test="productTitle != null">PRODUCT_TITLE,</if>
+            <if test="category != null">CATEGORY,</if>
             <if test="nowPrice != null">NOW_PRICE,</if>
             <if test="onholdPrice != null">ONHOLD_PRICE,</if>
             <if test="bidStartDate != null">BID_START_DATE,</if>
@@ -144,6 +149,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="bidStatus != null">BID_STATUS,</if>
             <if test="taskKind != null">TASK_KIND,</if>
             <if test="realStatus != null">REAL_STATUS,</if>
+            <if test="remark != null">REMARK,</if>
             <if test="deleteFlag != null">DELETE_FLAG,</if>
             <if test="updateCount != null">UPDATE_COUNT,</if>
             <if test="createBy != null">CREATE_BY,</if>
@@ -154,6 +160,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="productCode != null">#{productCode},</if>
             <if test="productTitle != null">#{productTitle},</if>
+            <if test="category != null">#{category},</if>
             <if test="nowPrice != null">#{nowPrice},</if>
             <if test="onholdPrice != null">#{onholdPrice},</if>
             <if test="bidStartDate != null">#{bidStartDate},</if>
@@ -167,6 +174,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="bidStatus != null">#{bidStatus},</if>
             <if test="taskKind != null">#{taskKind},</if>
             <if test="realStatus != null">#{realStatus},</if>
+            <if test="remark != null">#{remark},</if>
             <if test="deleteFlag != null">#{deleteFlag},</if>
             <if test="updateCount != null">#{updateCount},</if>
             <if test="createBy != null">#{createBy},</if>
@@ -180,6 +188,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         update T_PRODUCT_BID_INFO
         <trim prefix="SET" suffixOverrides=",">
             <if test="productTitle != null">PRODUCT_TITLE = #{productTitle},</if>
+            <if test="category != null">CATEGORY = #{category},</if>
             <if test="nowPrice != null">NOW_PRICE = #{nowPrice},</if>
             <if test="onholdPrice != null">ONHOLD_PRICE = #{onholdPrice},</if>
             <if test="bidStartDate != null">BID_START_DATE = #{bidStartDate},</if>
@@ -193,6 +202,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="bidStatus != null">BID_STATUS = #{bidStatus},</if>
             <if test="taskKind != null">TASK_KIND = #{taskKind},</if>
             <if test="realStatus != null">REAL_STATUS = #{realStatus},</if>
+            <if test="remark != null">REMARK = #{remark},</if>
             <if test="deleteFlag != null">DELETE_FLAG = #{deleteFlag},</if>
             <if test="updateCount != null">UPDATE_COUNT = #{updateCount},</if>
             <if test="createBy != null">CREATE_BY = #{createBy},</if>

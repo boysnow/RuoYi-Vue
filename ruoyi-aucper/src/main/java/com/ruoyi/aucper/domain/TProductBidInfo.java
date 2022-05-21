@@ -13,7 +13,7 @@ import com.ruoyi.common.core.domain.BaseEntity;
  * 商品入札情報对象 T_PRODUCT_BID_INFO
  *
  * @author ruoyi
- * @date 2022-05-12
+ * @date 2022-05-22
  */
 public class TProductBidInfo extends BaseEntity
 {
@@ -25,6 +25,10 @@ public class TProductBidInfo extends BaseEntity
     /** 商品タイトル */
     @Excel(name = "商品タイトル")
     private String productTitle;
+
+    /** カテゴリ */
+    @Excel(name = "カテゴリ")
+    private String category;
 
     /** 現在価格 */
     @Excel(name = "現在価格")
@@ -97,6 +101,15 @@ public class TProductBidInfo extends BaseEntity
     public String getProductTitle()
     {
         return productTitle;
+    }
+    public void setCategory(String category)
+    {
+        this.category = category;
+    }
+
+    public String getCategory()
+    {
+        return category;
     }
     public void setNowPrice(BigDecimal nowPrice)
     {
@@ -221,6 +234,7 @@ public class TProductBidInfo extends BaseEntity
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("productCode", getProductCode())
             .append("productTitle", getProductTitle())
+            .append("category", getCategory())
             .append("nowPrice", getNowPrice())
             .append("onholdPrice", getOnholdPrice())
             .append("bidStartDate", getBidStartDate())
@@ -234,6 +248,7 @@ public class TProductBidInfo extends BaseEntity
             .append("bidStatus", getBidStatus())
             .append("taskKind", getTaskKind())
             .append("realStatus", getRealStatus())
+            .append("remark", getRemark())
             .append("deleteFlag", getDeleteFlag())
             .append("updateCount", getUpdateCount())
             .append("createBy", getCreateBy())

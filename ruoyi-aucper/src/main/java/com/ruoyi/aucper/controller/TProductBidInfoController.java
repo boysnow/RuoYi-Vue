@@ -96,6 +96,11 @@ public class TProductBidInfoController extends BaseController
     @PostMapping
     public AjaxResult add(@RequestBody TProductBidInfo tProductBidInfo)
     {
+		// 存在チェック
+		TProductBidInfo bidInfo = tProductBidInfoService.selectTProductBidInfoByProductCode(tProductBidInfo.getProductCode());
+		if (bidInfo != null) {
+            return AjaxResult.error("既に登録済みです");
+		}
         return toAjax(tProductBidInfoService.insertTProductBidInfo(tProductBidInfo));
     }
 
@@ -112,6 +117,7 @@ public class TProductBidInfoController extends BaseController
     	info.setProductCode(tProductBidInfo.getProductCode());
     	info.setTaskKind(tProductBidInfo.getTaskKind());
     	info.setOnholdPrice(tProductBidInfo.getOnholdPrice());
+    	info.setRemark(tProductBidInfo.getRemark());
     	info.setTrusteeshipUser1(tProductBidInfo.getTrusteeshipUser1());
     	info.setTrusteeshipUser2(tProductBidInfo.getTrusteeshipUser2());
         return toAjax(tProductBidInfoService.updateTProductBidInfo(info));
