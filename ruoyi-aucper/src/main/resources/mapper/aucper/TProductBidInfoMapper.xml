@@ -107,7 +107,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="taskKind != null  and taskKind != ''"> and TASK_KIND = #{taskKind}</if>
             <if test="realStatus != null  and realStatus != ''"> and REAL_STATUS = #{realStatus}</if>
             <if test="deleteFlag != null "> and DELETE_FLAG = #{deleteFlag}</if>
-            <if test="remainingTime != null and remainingTimeUnit == 'MINUTE'"> and BID_END_DATE <![CDATA[ <= ]]> (sysdate() + INTERVAL #{remainingTime} ${remainingTimeUnit})</if>
+            <if test="remainingTime != null and remainingTimeUnit == 'MINUTE'"> and (BID_END_DATE is null or BID_END_DATE <![CDATA[ <= ]]> (sysdate() + INTERVAL #{remainingTime} ${remainingTimeUnit}))</if>
             <if test="remainingTime != null and remainingTimeUnit == 'HOUR'"> and BID_END_DATE <![CDATA[ <= ]]> (sysdate() + INTERVAL #{remainingTime} ${remainingTimeUnit})</if>
             <if test="remainingTime != null and remainingTimeUnit == 'DAY'"> and BID_END_DATE <![CDATA[ >= ]]> (sysdate() + INTERVAL #{remainingTime} ${remainingTimeUnit})</if>
         </where>
