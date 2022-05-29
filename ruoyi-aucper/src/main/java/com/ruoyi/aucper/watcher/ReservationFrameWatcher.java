@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.WebDriverRunner;
-import com.ruoyi.aucper.yahooapi.YahooAPIService;
 import com.zjiecode.wxpusher.client.WxPusher;
 import com.zjiecode.wxpusher.client.bean.Message;
 import com.zjiecode.wxpusher.client.bean.Page;
@@ -37,7 +36,7 @@ public class ReservationFrameWatcher {
 
 	private static final String MSG_FMT = "%s　予約可能：%s日";
 
-    private static final Logger logger = LoggerFactory.getLogger(YahooAPIService.class);
+    private static final Logger logger = LoggerFactory.getLogger(ReservationFrameWatcher.class);
 
     @Autowired
     @Qualifier("poolTargetSourceWebDriver")
@@ -114,7 +113,7 @@ public class ReservationFrameWatcher {
     	message.setContentType(Message.CONTENT_TYPE_TEXT);
     	message.setContent(msg);
     	message.setUids(uids);
-    	message.setUrl("http://wxpuser.zjiecode.com");// 省略可
+//    	message.setUrl("http://wxpuser.zjiecode.com");// 省略可
     	WxPusher.send(message);
 
     }

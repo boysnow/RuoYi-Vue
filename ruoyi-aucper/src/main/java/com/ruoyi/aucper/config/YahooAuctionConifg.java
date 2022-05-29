@@ -1,17 +1,16 @@
 package com.ruoyi.aucper.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.Profile;
 
 @Configuration
-@PropertySource("classpath:yahoo_auction.conf")
+@Profile("yahoo")
+@ConfigurationProperties("yahoo.auction")
 public class YahooAuctionConifg {
 
-	@Value("${base.url}")
     private String baseUrl;
 
-	@Value("${login.url}")
     private String loginUrl;
 
 	public String getBaseUrl() {
@@ -19,5 +18,11 @@ public class YahooAuctionConifg {
 	}
 	public String getLoginUrl() {
 		return loginUrl;
+	}
+	public void setBaseUrl(String baseUrl) {
+		this.baseUrl = baseUrl;
+	}
+	public void setLoginUrl(String loginUrl) {
+		this.loginUrl = loginUrl;
 	}
 }

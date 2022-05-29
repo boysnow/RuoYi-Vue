@@ -40,8 +40,8 @@ public class BrowserPoolConfig {
     WebDriverObjectPool makeWebDriverPool() {
         WebDriverObjectPool pool = new WebDriverObjectPool();
         pool.setTargetClass(WebDriver.class);
-        pool.setMaxSize(SeleneConifg.getMaxSize());
-        pool.setMinIdle(SeleneConifg.getMinIdle());
+        pool.setMaxSize(SeleneConifg.getPoolMaxSize());
+        pool.setMinIdle(SeleneConifg.getPoolMinIdle());
         pool.setTargetBeanName("webDriver");
         return pool;
     }

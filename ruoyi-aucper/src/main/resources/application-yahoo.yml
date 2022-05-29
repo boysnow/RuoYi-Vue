@@ -1,0 +1,5 @@
+### yahoo関連情報定義 ###
+yahoo:
+  auction:
+    baseUrl: https://page.auctions.yahoo.co.jp/jp/auction/
+    loginUrl: https://login.yahoo.co.jp/config/login

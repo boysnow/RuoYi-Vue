@@ -214,7 +214,7 @@ public class YahooAPIService {
     		logger.info("@@@@@@@@ Get exhibit info by [" + id + "] - END");
 
     	} catch (Exception e1) {
-    		logger.error("Failed to get get exhibit info.[" + id + "]", e1);
+    		logger.error("Failed to get exhibit info.[" + id + "]", e1);
     	} finally {
             try {
 				poolTargetSourceWebDriver.releaseTarget(webDriver);

@@ -2,51 +2,64 @@ package com.ruoyi.selene.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.Profile;
 
 @Configuration
-@PropertySource("classpath:selene.conf")
+@Profile("selene")
 public class SeleneConifg {
 
-    private static String chromeDriverPath;
-    private static String geckoDriverPath;
-    private static int maxSize;
-    private static int minIdle;
+    private static String webdriverChrome;
+    private static String webdriverGecko;
+    private static int poolMaxSize;
+    private static int poolMinIdle;
+    private static String gridJsonHub;
+    private static String gridJsonNode;
 
-    @Value("${webdriver.chrome.driver}")
-	public void setChromeDriverPath(String chromeDriverPath) {
-    	SeleneConifg.chromeDriverPath = chromeDriverPath;
+    @Value("${selene.webdriver.chrome}")
+	public void setWebdriverChrome(String webdriverChrome) {
+    	SeleneConifg.webdriverChrome = webdriverChrome;
+	}
+    @Value("${selene.webdriver.gecko}")
+	public void setWebdriverGecko(String webdriverGecko) {
+    	SeleneConifg.webdriverGecko = webdriverGecko;
+	}
+    @Value("${selene.pool.max-size}")
+	public void setPoolMaxSize(int poolMaxSize) {
+		SeleneConifg.poolMaxSize = poolMaxSize;
+	}
+    @Value("${selene.pool.min-idle}")
+	public void setPoolMinIdle(int poolMinIdle) {
+		SeleneConifg.poolMinIdle = poolMinIdle;
+	}
+    @Value("${selene.grid-json.hub}")
+	public void setGridJsonHub(String gridJsonHub) {
+		SeleneConifg.gridJsonHub = gridJsonHub;
+	}
+    @Value("${selene.grid-json.node}")
+	public void setGridJsonNode(String gridJsonNode) {
+		SeleneConifg.gridJsonNode = gridJsonNode;
 	}
 
-    @Value("${webdriver.gecko.driver}")
-	public void setGeckoDriverPath(String geckoDriverPath) {
-    	SeleneConifg.geckoDriverPath = geckoDriverPath;
+	public static String getWebdriverChrome() {
+		return webdriverChrome;
 	}
 
-    @Value("${pool.max.size}")
-	public void setMaxSize(int maxSize) {
-		SeleneConifg.maxSize = maxSize;
+	public static String getWebdriverGecko() {
+		return webdriverGecko;
 	}
 
-    @Value("${pool.min.idle}")
-	public void setMinIdle(int minIdle) {
-		SeleneConifg.minIdle = minIdle;
+	public static int getPoolMaxSize() {
+		return poolMaxSize;
 	}
 
-	public static String getChromeDriverPath() {
-		return chromeDriverPath;
+	public static int getPoolMinIdle() {
+		return poolMinIdle;
 	}
-
-	public static String getGeckoDriverPath() {
-		return geckoDriverPath;
+	public static String getGridJsonHub() {
+		return gridJsonHub;
 	}
-
-	public static int getMaxSize() {
-		return maxSize;
-	}
-
-	public static int getMinIdle() {
-		return minIdle;
+	public static String getGridJsonNode() {
+		return gridJsonNode;
 	}
 
 
