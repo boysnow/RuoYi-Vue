@@ -8,6 +8,11 @@ import org.springframework.context.annotation.Profile;
 @Profile("selene")
 public class SeleneConifg {
 
+	public static class Keys {
+		public static final String CHROME = "webdriver.chrome.driver";
+		public static final String GECKO = "webdriver.gecko.driver";
+	}
+
     private static String webdriverChrome;
     private static String webdriverGecko;
     private static int poolMaxSize;
