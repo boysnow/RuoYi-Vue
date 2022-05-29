@@ -1,6 +1,5 @@
 package com.ruoyi.selene.pool;
 
-import org.apache.commons.lang3.StringUtils;
 import org.openqa.grid.common.RegistrationRequest;
 import org.openqa.grid.internal.utils.SelfRegisteringRemote;
 import org.openqa.grid.internal.utils.configuration.GridHubConfiguration;
@@ -32,10 +31,10 @@ public class WebDriverObjectPool extends CommonsPool2TargetSource {
 
         logger.info("initialization grid begin.");
 
-        if (StringUtils.isEmpty(System.getProperty(SeleneConifg.Keys.CHROME))) {
+        if (SeleneConifg.isUseExternal()) {
             System.setProperty(SeleneConifg.Keys.CHROME, SeleneConifg.getWebdriverChrome());
         }
-        if (StringUtils.isEmpty(System.getProperty(SeleneConifg.Keys.GECKO))) {
+        if (SeleneConifg.isUseExternal()) {
             System.setProperty(SeleneConifg.Keys.GECKO, SeleneConifg.getWebdriverGecko());
         }
 
