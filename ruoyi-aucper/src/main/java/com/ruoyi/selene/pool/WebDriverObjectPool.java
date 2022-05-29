@@ -28,6 +28,9 @@ public class WebDriverObjectPool extends CommonsPool2TargetSource {
     }
 
     private void initializeGridAndNode() throws Exception {
+
+        logger.info("initialization grid begin.");
+
         System.setProperty("webdriver.chrome.driver", SeleneConifg.getWebdriverChrome());
         System.setProperty("webdriver.gecko.driver", SeleneConifg.getWebdriverGecko());
 
@@ -48,7 +51,7 @@ public class WebDriverObjectPool extends CommonsPool2TargetSource {
         remote.startRemoteServer();
         remote.startRegistrationProcess();
 
-        logger.info("initialization grid completed");
+        logger.info("initialization grid completed.");
 
     }
 
