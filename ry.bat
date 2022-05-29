@@ -1,21 +1,22 @@
 @echo off
 
-rem jar平级目录
+rem jar
 set AppName=ruoyi-admin.jar
+set path=%path%;C:\pleiades\java\8\bin
 
-rem JVM参数
-set JVM_OPTS="-Dname=%AppName%  -Duser.timezone=Asia/Shanghai -Xms512m -Xmx1024m -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError -XX:+PrintGCDateStamps  -XX:+PrintGCDetails -XX:NewRatio=1 -XX:SurvivorRatio=30 -XX:+UseParallelGC -XX:+UseParallelOldGC"
+rem JVM options
+set JVM_OPTS="-Dname=%AppName%  -Duser.timezone=Asia/Tokyo -Xms512m -Xmx1024m -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError -XX:+PrintGCDateStamps  -XX:+PrintGCDetails -XX:NewRatio=1 -XX:SurvivorRatio=30 -XX:+UseParallelGC -XX:+UseParallelOldGC"
 
 
 ECHO.
-	ECHO.  [1] 启动%AppName%
-	ECHO.  [2] 关闭%AppName%
-	ECHO.  [3] 重启%AppName%
-	ECHO.  [4] 启动状态 %AppName%
-	ECHO.  [5] 退 出
+	ECHO.  [1] start %AppName%
+	ECHO.  [2] stop %AppName%
+	ECHO.  [3] restart %AppName%
+	ECHO.  [4] status %AppName%
+	ECHO.  [5] quit
 ECHO.
 
-ECHO.请输入选择项目的序号:
+ECHO.Please input the command no:
 set /p ID=
 	IF "%id%"=="1" GOTO start
 	IF "%id%"=="2" GOTO stop
@@ -35,11 +36,11 @@ PAUSE
 
 start javaw %JVM_OPTS% -jar %AppName%
 
-echo  starting……
+echo  starting...
 echo  Start %AppName% success...
 goto:eof
 
-rem 函数stop通过jps命令查找pid并结束进程
+rem confirm the pid
 :stop
 	for /f "usebackq tokens=1-2" %%a in (`jps -l ^| findstr %AppName%`) do (
 		set pid=%%a
@@ -48,7 +49,7 @@ rem 函数stop通过jps命令查找pid并结束进程
 	if not defined pid (echo process %AppName% does not exists) else (
 		echo prepare to kill %image_name%
 		echo start kill %pid% ...
-		rem 根据进程ID，kill进程
+		rem kill the process by PID
 		taskkill /f /pid %pid%
 	)
 goto:eof
