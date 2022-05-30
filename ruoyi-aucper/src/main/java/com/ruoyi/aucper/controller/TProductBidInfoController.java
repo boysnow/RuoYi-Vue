@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.openqa.selenium.By;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.codeborne.selenide.Selenide;
+import com.codeborne.selenide.SelenideElement;
 import com.ruoyi.aucper.config.YahooAuctionConifg;
 import com.ruoyi.aucper.constant.RealStatus;
 import com.ruoyi.aucper.domain.TProductBidInfo;
@@ -157,6 +160,50 @@ public class TProductBidInfoController extends BaseController
     		statusService.updateRealStatus(code, RealStatus.Updating);
         	yahooAPIService.getExhibitInfoById(code);
     	}
+        return AjaxResult.success();
+    }
+
+    @PreAuthorize("@ss.hasPermi('aucper:bid:query')")
+    @PostMapping(value = "/login")
+    public AjaxResult doLogin() {
+    	System.out.println("login..................................");
+
+
+    	Selenide.open("https://login.yahoo.co.jp/config/login");
+
+    	Selenide.screenshot("1001.jpg");
+
+		SelenideElement username = Selenide.$(By.id("username"));
+		System.out.println(username.isDisplayed());
+		if (username.isDisplayed()) {
+			username.val("boysnow336");
+			Selenide.$(By.id("btnNext")).click();
+	    	Selenide.screenshot("1002.jpg");
+		}
+
+		System.out.println("pwdWrap isDisplayed:" + Selenide.$(By.id("pwdWrap")).isDisplayed());
+		System.out.println("pwdWrap Height:" + Selenide.$(By.id("pwdWrap")).getSize().getHeight());
+
+		if (Selenide.$(By.id("pwdWrap")).isDisplayed()) {
+
+			Selenide.$(By.id("passwd")).val("mj210213");
+	    	Selenide.screenshot("1003.jpg");
+//			Selenide.$(By.id("btnSubmit")).click();
+		} else if (Selenide.$(By.id("codeWrap")).isDisplayed()) {
+			// 認証コード
+			Selenide.$(By.id("code")).sendKeys("確認コード入力");
+	    	Selenide.screenshot("1004.jpg");
+//			Selenide.$(By.id("btnSubmit")).click();
+		} else {
+
+			Selenide.$(By.id("btnCodeSend")).click();
+		}
+
+
+    	Selenide.screenshot("1005.jpg");
+
+
+
         return AjaxResult.success();
     }
 }

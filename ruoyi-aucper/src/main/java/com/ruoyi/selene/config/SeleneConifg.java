@@ -13,7 +13,6 @@ public class SeleneConifg {
 		public static final String GECKO = "webdriver.gecko.driver";
 	}
 
-	private static boolean useExternal;
     private static String webdriverChrome;
     private static String webdriverGecko;
     private static int poolMaxSize;
@@ -21,10 +20,6 @@ public class SeleneConifg {
     private static String gridJsonHub;
     private static String gridJsonNode;
 
-    @Value("${selene.webdriver.use-external}")
-	public void setUseExternal(boolean useExternal) {
-		SeleneConifg.useExternal = useExternal;
-	}
     @Value("${selene.webdriver.chrome}")
 	public void setWebdriverChrome(String webdriverChrome) {
     	SeleneConifg.webdriverChrome = webdriverChrome;
@@ -67,9 +62,6 @@ public class SeleneConifg {
 	}
 	public static String getGridJsonNode() {
 		return gridJsonNode;
-	}
-	public static boolean isUseExternal() {
-		return useExternal;
 	}
 
 }

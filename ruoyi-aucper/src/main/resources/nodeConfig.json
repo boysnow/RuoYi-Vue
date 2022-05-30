@@ -9,7 +9,8 @@
     {
       "browserName": "chrome",
       "maxInstances": 5,
-      "seleniumProtocol": "WebDriver"
+      "seleniumProtocol": "WebDriver",
+      "platform": "WINDOWS"
     }
   ],
   "cleanUpCycle":2000,

@@ -21,22 +21,18 @@ public class WebDriverObjectPool extends CommonsPool2TargetSource {
 
         initializeGridAndNode();
 
-        Thread.sleep(3000);
-        for (int i = 0; i < this.getMinIdle(); i++) {
-            this.releaseTarget(this.getTarget());
-        }
+//        Thread.sleep(3000);
+//        for (int i = 0; i < this.getMinIdle(); i++) {
+//            this.releaseTarget(this.getTarget());
+//        }
     }
 
     private void initializeGridAndNode() throws Exception {
 
         logger.info("initialization grid begin.");
 
-        if (SeleneConifg.isUseExternal()) {
-            System.setProperty(SeleneConifg.Keys.CHROME, SeleneConifg.getWebdriverChrome());
-        }
-        if (SeleneConifg.isUseExternal()) {
-            System.setProperty(SeleneConifg.Keys.GECKO, SeleneConifg.getWebdriverGecko());
-        }
+        System.setProperty(SeleneConifg.Keys.CHROME, SeleneConifg.getWebdriverChrome());
+        System.setProperty(SeleneConifg.Keys.GECKO, SeleneConifg.getWebdriverGecko());
 
         //  HUB Configuration - org.openqa.grid.internal.utils.configuration.GridHubConfiguration
         GridHubConfiguration gridHubConfig = GridHubConfiguration.loadFromJSON(SeleneConifg.getGridJsonHub());
