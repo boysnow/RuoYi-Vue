@@ -74,7 +74,7 @@ public class YahooAPIService {
     		 * 開始ログや更新処理などをここ以降に実装する
     		 */
     		logger.info("@@@@@@@@ Get exhibit info by [" + id + "] - START");
-    		logger.info("### use webdriver:{}", webDriver.getClass());
+    		logger.info("### use webdriver:{}", webDriver.getClass().getName());
 
         	statusService.updateRealStatus(id, RealStatus.Updating);
 
