@@ -67,7 +67,6 @@ public class YahooAPIService {
     	WebDriver webDriver = null;
     	try {
     		webDriver = (WebDriver) poolTargetSourceWebDriver.getTarget();
-    		logger.info("### user webdriver:{}", webDriver.getClass());
     		WebDriverRunner.setWebDriver(webDriver);
 
     		/**
@@ -75,6 +74,7 @@ public class YahooAPIService {
     		 * 開始ログや更新処理などをここ以降に実装する
     		 */
     		logger.info("@@@@@@@@ Get exhibit info by [" + id + "] - START");
+    		logger.info("### use webdriver:{}", webDriver.getClass());
 
         	statusService.updateRealStatus(id, RealStatus.Updating);
 

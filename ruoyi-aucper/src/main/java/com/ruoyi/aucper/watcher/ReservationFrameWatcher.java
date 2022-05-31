@@ -50,7 +50,6 @@ public class ReservationFrameWatcher {
     	WebDriver webDriver = null;
     	try {
     		webDriver = (WebDriver) poolTargetSourceWebDriver.getTarget();
-    		logger.info("### user webdriver:{}", webDriver.getClass());
 
     		/**
     		 * 上記でプールからWebDriverオブジェクトを取得する為に時間が要する為
@@ -58,6 +57,7 @@ public class ReservationFrameWatcher {
     		 */
     		WebDriverRunner.setWebDriver(webDriver);
     		logger.info("@@@@@@@@ watching harumi flag - START");
+    		logger.info("### use webdriver:{}", webDriver.getClass());
 
         	Selenide.open(URL);
 
