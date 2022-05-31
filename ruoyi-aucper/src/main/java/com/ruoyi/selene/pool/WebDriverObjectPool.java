@@ -1,5 +1,8 @@
 package com.ruoyi.selene.pool;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.openqa.grid.common.RegistrationRequest;
 import org.openqa.grid.internal.utils.SelfRegisteringRemote;
 import org.openqa.grid.internal.utils.configuration.GridHubConfiguration;
@@ -21,10 +24,18 @@ public class WebDriverObjectPool extends CommonsPool2TargetSource {
 
         initializeGridAndNode();
 
-//        Thread.sleep(3000);
-//        for (int i = 0; i < this.getMinIdle(); i++) {
-//            this.releaseTarget(this.getTarget());
-//        }
+        // 初期化に時間が要する為、少し待機
+        Thread.sleep(3000);
+
+        // min idle 作成
+        List<Object> list = new ArrayList<>();
+        for (int i = 0; i < this.getMinIdle(); i++) {
+        	list.add(this.getTarget());
+        }
+        for (Object o : list) {
+        	this.releaseTarget(o);
+        }
+        list.clear();
     }
 
     private void initializeGridAndNode() throws Exception {
