@@ -9,6 +9,7 @@ import org.openqa.grid.internal.utils.configuration.GridHubConfiguration;
 import org.openqa.grid.internal.utils.configuration.GridNodeConfiguration;
 import org.openqa.grid.shared.GridNodeServer;
 import org.openqa.grid.web.Hub;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.server.SeleniumServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,9 @@ public class WebDriverObjectPool extends CommonsPool2TargetSource {
         // min idle 作成
         List<Object> list = new ArrayList<>();
         for (int i = 0; i < this.getMinIdle(); i++) {
-        	list.add(this.getTarget());
+        	WebDriver webDriver = (WebDriver) this.getTarget();
+        	list.add(webDriver);
+    		logger.info("### Initialized webdriver:{}", webDriver.getClass());
         }
         for (Object o : list) {
         	this.releaseTarget(o);

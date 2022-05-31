@@ -50,6 +50,7 @@ public class ReservationFrameWatcher {
     	WebDriver webDriver = null;
     	try {
     		webDriver = (WebDriver) poolTargetSourceWebDriver.getTarget();
+    		logger.info("### user webdriver:{}", webDriver.getClass());
 
     		/**
     		 * 上記でプールからWebDriverオブジェクトを取得する為に時間が要する為

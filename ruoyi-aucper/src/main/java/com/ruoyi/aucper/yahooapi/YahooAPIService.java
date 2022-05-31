@@ -67,6 +67,7 @@ public class YahooAPIService {
     	WebDriver webDriver = null;
     	try {
     		webDriver = (WebDriver) poolTargetSourceWebDriver.getTarget();
+    		logger.info("### user webdriver:{}", webDriver.getClass());
     		WebDriverRunner.setWebDriver(webDriver);
 
     		/**
