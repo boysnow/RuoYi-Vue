@@ -303,15 +303,22 @@ public class YahooAPIService {
 		Selenide.open(config.getLoginUrl());
 
 		SelenideElement username = Selenide.$(By.id("username"));
-		System.out.println("@@@@@@@@@@@@@@@@@@@@ 22");
-		System.out.println(username.isDisplayed());
+
+		logger.info("### login.[username displayed{}]", username.isDisplayed());
+
+		Selenide.screenshot("ログイン-初期.jpg");
+
 		if (username.isDisplayed()) {
+			Selenide.screenshot("ログイン-ユーザID入力前.jpg");
 			username.val("buyee05");
 			Selenide.$(By.id("btnNext")).click();
+			Selenide.screenshot("ログイン-ユーザID入力後.jpg");
 		}
 
+		Selenide.screenshot("ログイン-PW入力前.jpg");
 		Selenide.$(By.id("passwd")).val("a8621jp");
 		Selenide.$(By.id("btnSubmit")).click();
+		Selenide.screenshot("ログイン-PW入力後.jpg");
 
 	}
 
