@@ -57,7 +57,7 @@ public class ReservationFrameWatcher {
     		 */
     		WebDriverRunner.setWebDriver(webDriver);
     		logger.info("@@@@@@@@ watching harumi flag - START");
-    		logger.info("### use webdriver:{}", webDriver.getClass().getName());
+    		logger.info("### use webdriver:{}", webDriver.toString());
 
         	Selenide.open(URL);
 

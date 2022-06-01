@@ -33,7 +33,7 @@ public class WebDriverObjectPool extends CommonsPool2TargetSource {
         for (int i = 0; i < this.getMinIdle(); i++) {
         	WebDriver webDriver = (WebDriver) this.getTarget();
         	list.add(webDriver);
-    		logger.info("### Initialized webdriver:{}", webDriver.getClass().getName());
+    		logger.info("### Initialized webdriver:{}", webDriver.toString());
         }
         for (Object o : list) {
         	this.releaseTarget(o);
