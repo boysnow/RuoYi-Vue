@@ -29,6 +29,8 @@ public class BrowserPoolConfig {
 
         ChromeOptions chromeOptions = new ChromeOptions();
         chromeOptions.addArguments("--headless");
+        chromeOptions.addArguments("--single-process");
+//        chromeOptions.addArguments("disable-accelerated-layers");
 //        chromeOptions.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, UnexpectedAlertBehaviour.IGNORE);
 
         WebDriver driver = new RemoteWebDriver(remoteURL, chromeOptions);

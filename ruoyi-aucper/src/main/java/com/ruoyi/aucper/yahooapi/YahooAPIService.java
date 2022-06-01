@@ -41,9 +41,9 @@ public class YahooAPIService {
 
     private static final Logger logger = LoggerFactory.getLogger(YahooAPIService.class);
 
-	static {
-		System.setProperty("selenide.headless", "true");
-	}
+//	static {
+//		System.setProperty("selenide.headless", "true");
+//	}
 
     @Autowired
     private YahooAuctionConifg config;
