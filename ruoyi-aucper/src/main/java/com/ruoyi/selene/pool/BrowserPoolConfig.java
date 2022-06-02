@@ -29,14 +29,14 @@ public class BrowserPoolConfig {
 
         ChromeOptions chromeOptions = new ChromeOptions();
         chromeOptions.addArguments("--headless");
-        chromeOptions.addArguments("--single-process");
-        chromeOptions.addArguments("--disable-accelerated-layers");
+//        chromeOptions.addArguments("--single-process");
+//        chromeOptions.addArguments("--disable-accelerated-layers");
 
 //        chromeOptions.addArguments("--start-maximized"); // open Browser in maximized mode
 //        chromeOptions.addArguments("--disable-infobars"); // disabling infobars
-        chromeOptions.addArguments("--disable-extensions"); // disabling extensions
+//        chromeOptions.addArguments("--disable-extensions"); // disabling extensions
 //        chromeOptions.addArguments("--disable-gpu"); // applicable to windows os only
-        chromeOptions.addArguments("--disable-dev-shm-usage"); // overcome limited resource problems
+//        chromeOptions.addArguments("--disable-dev-shm-usage"); // overcome limited resource problems
 //        chromeOptions.addArguments("--no-sandbox"); // Bypass OS security model
 //        chromeOptions.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, UnexpectedAlertBehaviour.IGNORE);
 
