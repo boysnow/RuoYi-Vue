@@ -7,6 +7,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -33,7 +34,9 @@ import com.ruoyi.aucper.config.YahooAuctionConifg;
 import com.ruoyi.aucper.constant.BidStatus;
 import com.ruoyi.aucper.constant.RealStatus;
 import com.ruoyi.aucper.domain.TProductBidInfo;
+import com.ruoyi.aucper.domain.TYahooAccount;
 import com.ruoyi.aucper.mapper.TProductBidInfoMapper;
+import com.ruoyi.aucper.mapper.TYahooAccountMapper;
 import com.ruoyi.aucper.yahooapi.dto.ExhibitInfoDTO;
 
 @Service
@@ -50,6 +53,8 @@ public class YahooAPIService {
 
     @Autowired
     private TProductBidInfoMapper tProductBidInfoMapper;
+    @Autowired
+    private TYahooAccountMapper tYahooAccountMapper;
     @Autowired
     private StatusService statusService;
 
@@ -185,9 +190,13 @@ public class YahooAPIService {
     		// 取得できなかった場合、ログインしてから再取得
     		if (!bidderResult) {
     			logger.info("ログインして最高額入札者を再取得する[" + id + "]");
-    			this.login();
+    			this.login(config.getAccountId(), config.getPassword());
         		open(config.getBaseUrl() + id);
         		this.getBidder(exhibitInfoDTO);
+    		}
+    		if (config.isDebug()) {
+        		String sysTime = com.ruoyi.common.utils.DateUtils.dateTimeNow();
+        		Selenide.screenshot(String.format("%s_%s", sysTime, id + ".jpg"));
     		}
 
 //    		// 出品者のID
@@ -299,27 +308,44 @@ public class YahooAPIService {
 		}
 	}
 
-	public void login() {
+	public void login(String userid, String password) {
 
 		Selenide.open(config.getLoginUrl());
-
 		SelenideElement username = Selenide.$(By.id("username"));
+		String sysTime = com.ruoyi.common.utils.DateUtils.dateTimeNow();
 
-		logger.info("### login.[username displayed{}]", username.isDisplayed());
+		logger.info("### login.[username displayed:{}]", username.isDisplayed());
 
-		Selenide.screenshot("ログイン-初期.jpg");
+		Selenide.screenshot(sysTime + "_ログイン-初期.jpg");
 
 		if (username.isDisplayed()) {
-			Selenide.screenshot("ログイン-ユーザID入力前.jpg");
-			username.val("buyee05");
+			Selenide.screenshot(sysTime + "_ログイン-ユーザID入力前.jpg");
+			username.val(userid);
 			Selenide.$(By.id("btnNext")).click();
-			Selenide.screenshot("ログイン-ユーザID入力後.jpg");
+			Selenide.screenshot(sysTime + "_ログイン-ユーザID入力後.jpg");
 		}
 
-		Selenide.screenshot("ログイン-PW入力前.jpg");
-		Selenide.$(By.id("passwd")).val("a8621jp");
+		Selenide.screenshot(sysTime + "_ログイン-PW入力前.jpg");
+		Selenide.$(By.id("passwd")).val(password);
 		Selenide.$(By.id("btnSubmit")).click();
-		Selenide.screenshot("ログイン-PW入力後.jpg");
+		Selenide.screenshot(sysTime + "_ログイン-PW入力後.jpg");
+
+	}
+
+	public void initLogin(WebDriver webDriver, int wdIndex) {
+
+		WebDriverRunner.setWebDriver(webDriver);
+
+		TYahooAccount cond = new TYahooAccount();
+		cond.setDeleteFlag(false);
+		List<TYahooAccount> list = tYahooAccountMapper.selectTYahooAccountList(cond);
+		if (list.size() == 0) {
+			return;
+		}
+
+		int index = wdIndex % list.size();
+		TYahooAccount account = list.get(index);
+		this.login(account.getYahooAccountId(), account.getPassword());
 
 	}
 

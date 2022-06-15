@@ -15,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.target.CommonsPool2TargetSource;
 
+import com.ruoyi.aucper.yahooapi.YahooAPIService;
+import com.ruoyi.common.utils.spring.SpringUtils;
 import com.ruoyi.selene.config.SeleneConifg;
 
 public class WebDriverObjectPool extends CommonsPool2TargetSource {
@@ -28,10 +30,13 @@ public class WebDriverObjectPool extends CommonsPool2TargetSource {
         // 初期化に時間が要する為、少し待機
         Thread.sleep(3000);
 
+        YahooAPIService yahooAPIService = SpringUtils.getBean(YahooAPIService.class);
+
         // min idle 作成
         List<Object> list = new ArrayList<>();
         for (int i = 0; i < this.getMinIdle(); i++) {
         	WebDriver webDriver = (WebDriver) this.getTarget();
+        	yahooAPIService.initLogin(webDriver, i);
         	list.add(webDriver);
     		logger.info("### Initialized webdriver:{}", webDriver.toString());
         }
@@ -45,26 +50,32 @@ public class WebDriverObjectPool extends CommonsPool2TargetSource {
 
         logger.info("initialization grid begin.");
 
-        System.setProperty(SeleneConifg.Keys.CHROME, SeleneConifg.getWebdriverChrome());
-        System.setProperty(SeleneConifg.Keys.GECKO, SeleneConifg.getWebdriverGecko());
+        try {
 
-        //  HUB Configuration - org.openqa.grid.internal.utils.configuration.GridHubConfiguration
-        GridHubConfiguration gridHubConfig = GridHubConfiguration.loadFromJSON(SeleneConifg.getGridJsonHub());
+            System.setProperty(SeleneConifg.Keys.CHROME, SeleneConifg.getWebdriverChrome());
+            System.setProperty(SeleneConifg.Keys.GECKO, SeleneConifg.getWebdriverGecko());
 
-        Hub hub = new Hub(gridHubConfig);
-        hub.start();
+            //  HUB Configuration - org.openqa.grid.internal.utils.configuration.GridHubConfiguration
+            GridHubConfiguration gridHubConfig = GridHubConfiguration.loadFromJSON(SeleneConifg.getGridJsonHub());
 
-        // initialize node
-        // NODE Configuration - org.openqa.selenium.remote.server.SeleniumServer
-        GridNodeConfiguration gridNodeConfiguration = GridNodeConfiguration.loadFromJSON(SeleneConifg.getGridJsonNode());
-        RegistrationRequest request = new RegistrationRequest( gridNodeConfiguration );
-        GridNodeServer node = new SeleniumServer( request.getConfiguration() );
+            Hub hub = new Hub(gridHubConfig);
+            hub.start();
 
-        SelfRegisteringRemote remote = new SelfRegisteringRemote( request );
-        remote.setRemoteServer( node );
-        remote.startRemoteServer();
-        remote.startRegistrationProcess();
+            // initialize node
+            // NODE Configuration - org.openqa.selenium.remote.server.SeleniumServer
+            GridNodeConfiguration gridNodeConfiguration = GridNodeConfiguration.loadFromJSON(SeleneConifg.getGridJsonNode());
+            RegistrationRequest request = new RegistrationRequest( gridNodeConfiguration );
+            GridNodeServer node = new SeleniumServer( request.getConfiguration() );
 
+            SelfRegisteringRemote remote = new SelfRegisteringRemote( request );
+            remote.setRemoteServer( node );
+            remote.startRemoteServer();
+            remote.startRegistrationProcess();
+
+		} catch (Exception e) {
+			logger.error("Failed to initializeGridAndNode.", e);
+			throw e;
+		}
         logger.info("initialization grid completed.");
 
     }

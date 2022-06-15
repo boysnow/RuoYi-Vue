@@ -3,3 +3,7 @@ yahoo:
   auction:
     baseUrl: https://page.auctions.yahoo.co.jp/jp/auction/
     loginUrl: https://login.yahoo.co.jp/config/login
+  login:
+    accountId: aucper336
+    password: makendev336
+  debug: true

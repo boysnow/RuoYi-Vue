@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Scope;
 import com.ruoyi.selene.config.SeleneConifg;
 
 @Configuration
-@DependsOn("seleneConifg")
+@DependsOn({"seleneConifg", "druidConfig"})
 public class BrowserPoolConfig {
 
     @Bean(name = "webDriver")
