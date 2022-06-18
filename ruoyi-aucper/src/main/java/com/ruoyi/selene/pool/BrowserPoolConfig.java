@@ -29,7 +29,8 @@ public class BrowserPoolConfig {
 
         ChromeOptions chromeOptions = new ChromeOptions();
         chromeOptions.addArguments("--headless");
-//        chromeOptions.addArguments("--single-process");
+        chromeOptions.addArguments("--single-process");
+        chromeOptions.addArguments("window-size=1920,1080");
 //        chromeOptions.addArguments("--disable-accelerated-layers");
 
 //        chromeOptions.addArguments("--start-maximized"); // open Browser in maximized mode
@@ -39,6 +40,11 @@ public class BrowserPoolConfig {
 //        chromeOptions.addArguments("--disable-dev-shm-usage"); // overcome limited resource problems
 //        chromeOptions.addArguments("--no-sandbox"); // Bypass OS security model
 //        chromeOptions.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, UnexpectedAlertBehaviour.IGNORE);
+
+        // 今後検討の価値がある
+        // ※1webdriver-manager で Chrome webdriver を自動更新する
+        // ※2webdriver-managerのおかげでChrome Driverのバージョンを気にしなくてよくなった
+        //ChromeDriverManager manager = new ChromeDriverManager();
 
         WebDriver driver = new RemoteWebDriver(remoteURL, chromeOptions);
 

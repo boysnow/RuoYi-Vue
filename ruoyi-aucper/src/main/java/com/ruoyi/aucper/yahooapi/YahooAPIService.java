@@ -196,7 +196,7 @@ public class YahooAPIService {
     		}
     		if (config.isDebug()) {
         		String sysTime = com.ruoyi.common.utils.DateUtils.dateTimeNow();
-        		Selenide.screenshot(String.format("%s_%s", sysTime, id + ".jpg"));
+        		Selenide.screenshot(String.format("%s_%s", sysTime, id));
     		}
 
 //    		// 出品者のID
@@ -316,19 +316,29 @@ public class YahooAPIService {
 
 		logger.info("### login.[username displayed:{}]", username.isDisplayed());
 
-		Selenide.screenshot(sysTime + "_ログイン-初期.jpg");
-
-		if (username.isDisplayed()) {
-			Selenide.screenshot(sysTime + "_ログイン-ユーザID入力前.jpg");
-			username.val(userid);
-			Selenide.$(By.id("btnNext")).click();
-			Selenide.screenshot(sysTime + "_ログイン-ユーザID入力後.jpg");
+		if (config.isDebug()) {
+			Selenide.screenshot(sysTime + "_01_ログイン-初期");
 		}
 
-		Selenide.screenshot(sysTime + "_ログイン-PW入力前.jpg");
+		if (username.isDisplayed()) {
+			if (config.isDebug()) {
+				Selenide.screenshot(sysTime + "_02_ログイン-ユーザID入力前");
+			}
+			username.val(userid);
+			Selenide.$(By.id("btnNext")).click();
+			if (config.isDebug()) {
+				Selenide.screenshot(sysTime + "_03_ログイン-ユーザID入力後");
+			}
+		}
+
+		if (config.isDebug()) {
+			Selenide.screenshot(sysTime + "_04_ログイン-PW入力前");
+		}
 		Selenide.$(By.id("passwd")).val(password);
 		Selenide.$(By.id("btnSubmit")).click();
-		Selenide.screenshot(sysTime + "_ログイン-PW入力後.jpg");
+		if (config.isDebug()) {
+			Selenide.screenshot(sysTime + "_05_ログイン-PW入力後");
+		}
 
 	}
 
