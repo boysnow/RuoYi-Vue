@@ -28,7 +28,7 @@ public class BrowserPoolConfig {
 //        WebDriver driver = new RemoteWebDriver(remoteURL, capabilities);
 
         ChromeOptions chromeOptions = new ChromeOptions();
-        chromeOptions.addArguments("--headless");
+//        chromeOptions.addArguments("--headless");
         chromeOptions.addArguments("--single-process");
         chromeOptions.addArguments("window-size=1920,1080");
 //        chromeOptions.addArguments("--disable-accelerated-layers");
