@@ -28,7 +28,7 @@ public class WebDriverObjectPool extends CommonsPool2TargetSource {
         initializeGridAndNode();
 
         // 初期化に時間が要する為、少し待機
-        Thread.sleep(3000);
+        Thread.sleep(5000);
 
         YahooAPIService yahooAPIService = SpringUtils.getBean(YahooAPIService.class);
 
