@@ -28,7 +28,7 @@ public class BrowserPoolConfig {
 //        WebDriver driver = new RemoteWebDriver(remoteURL, capabilities);
 
         ChromeOptions chromeOptions = new ChromeOptions();
-//        chromeOptions.addArguments("--headless");
+        chromeOptions.addArguments("--headless");
         chromeOptions.addArguments("--single-process");
 //        chromeOptions.addArguments("window-size=1920,1080");
 //        chromeOptions.addArguments("--disable-accelerated-layers");
@@ -38,7 +38,7 @@ public class BrowserPoolConfig {
 //        chromeOptions.addArguments("--disable-extensions"); // disabling extensions
 //        chromeOptions.addArguments("--disable-gpu"); // applicable to windows os only
 //        chromeOptions.addArguments("--disable-dev-shm-usage"); // overcome limited resource problems
-//        chromeOptions.addArguments("--no-sandbox"); // Bypass OS security model
+        chromeOptions.addArguments("--no-sandbox"); // Bypass OS security model
 //        chromeOptions.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, UnexpectedAlertBehaviour.IGNORE);
 
         // 今後検討の価値がある

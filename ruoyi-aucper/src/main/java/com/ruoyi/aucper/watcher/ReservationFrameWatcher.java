@@ -33,7 +33,8 @@ public class ReservationFrameWatcher {
 
 	private static final String APP_TOKEN = "AT_0UihKvBoi92ExbEigVWoUddrEAo9Grlq";
 	private static final String URL = "https://www.31sumai.com/attend/X1604/?utm_source=straight&utm_medium=mm&utm_campaign=X1604&utm_term=limited1&utm_content=1&mkt_tok=NDI2LUJDTy03MDMAAAGEjguP8VGbWQWrGa7tpQYfYuoPiSd6q6UQWwwK-JhxrUkzhaI4ypDwyaxghOSeofclaqXJain7L4gu7Dxm05RqcUzchnJBqtqvUqgu7b6hd8GLTQRc";
-
+	private static final String NOT_ACCEPTED = "来場予約を受け付けておりません";
+	
 	private static final String MSG_FMT = "%s　予約可能：%s日";
 
     private static final Logger logger = LoggerFactory.getLogger(ReservationFrameWatcher.class);
@@ -62,6 +63,11 @@ public class ReservationFrameWatcher {
         	Selenide.open(URL);
 
         	WebElement header = Selenide.$(By.cssSelector("div.ui-datepicker-header"));
+
+        	if (!header.isDisplayed()) {
+        		logger.info("@@@@@@@@ watching harumi flag - END[not accepted]");
+    			return;
+    		}
 
         	String msg = "";
         	int count = 1;
