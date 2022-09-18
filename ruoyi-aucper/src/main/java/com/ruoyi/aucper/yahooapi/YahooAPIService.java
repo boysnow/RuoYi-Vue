@@ -188,12 +188,14 @@ public class YahooAPIService {
 			BigDecimal tax = BigDecimal.ZERO;
 			try {
 				String taxStr = $(".Price__tax").text().trim();
-				taxStr = taxStr.replace(taxStr, "（税込 ").replace(taxStr, " 円）");
+				taxStr = taxStr.replaceAll("（|税込|税|）", "");
 				tax = org.springframework.util.NumberUtils.parseNumber(taxStr.trim(), BigDecimal.class, format);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			exhibitInfoDTO.setTax(tax);
+			if (BigDecimal.ZERO.compareTo(tax) != 0) {
+				exhibitInfoDTO.setPrice(tax);
+			}
 
 
     		// 最高額入札者のID
