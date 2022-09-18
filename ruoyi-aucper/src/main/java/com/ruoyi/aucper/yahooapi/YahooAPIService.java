@@ -62,6 +62,8 @@ public class YahooAPIService {
 	private static final String FMT_DATE_JSON = "yyyy-MM-dd HH:mm:ss";
 	private static final String FMT_DATE_HTML = "yyyy.MM.dd（E）HH:mm";
 
+	private static NumberFormat format = DecimalFormat.getInstance(Locale.JAPAN);
+
     @Autowired
     @Qualifier("poolTargetSourceWebDriver")
     private CommonsPool2TargetSource poolTargetSourceWebDriver;
@@ -142,7 +144,6 @@ public class YahooAPIService {
     			// 現在価格
     			BigDecimal price = BigDecimal.ZERO;
     			try {
-    				NumberFormat format = DecimalFormat.getInstance(Locale.JAPAN);
     				price = org.springframework.util.NumberUtils.parseNumber($(".Price__value").text().trim(), BigDecimal.class, format);
     			} catch (Exception e) {
     				e.printStackTrace();
@@ -181,9 +182,19 @@ public class YahooAPIService {
     			if (StringUtils.isNotEmpty(statusStr) && statusStr.startsWith(BidStatus.closed.text)) {
     				exhibitInfoDTO.setStatus(BidStatus.closed.value);
     			}
-
-
     		}
+
+    		// Shopの場合、消費税を取得
+			BigDecimal tax = BigDecimal.ZERO;
+			try {
+				String taxStr = $(".Price__tax").text().trim();
+				taxStr = taxStr.replace(taxStr, "（税込 ").replace(taxStr, " 円）");
+				tax = org.springframework.util.NumberUtils.parseNumber(taxStr.trim(), BigDecimal.class, format);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			exhibitInfoDTO.setTax(tax);
+
 
     		// 最高額入札者のID
     		boolean bidderResult = this.getBidder(exhibitInfoDTO);
@@ -334,15 +345,35 @@ public class YahooAPIService {
 		if (config.isDebug()) {
 			Selenide.screenshot(sysTime + "_04_ログイン-PW入力前");
 		}
-		Selenide.$(By.id("passwd")).val(password);
-		Selenide.$(By.id("btnSubmit")).click();
-		if (config.isDebug()) {
-			Selenide.screenshot(sysTime + "_05_ログイン-PW入力後");
+		// PW認証
+		SelenideElement pwElement = Selenide.$(By.id("passwd"));
+		if (pwElement.isDisplayed()) {
+			pwElement.val(password);
+			Selenide.$(By.id("btnSubmit")).click();
+			if (config.isDebug()) {
+				Selenide.screenshot(sysTime + "_05_ログイン-PW入力後");
+			}
+			return;
 		}
+		// 携帯認証
+		SelenideElement codeElement = Selenide.$(By.id("code"));
+		if (codeElement.isDisplayed()) {
+			codeElement.val("");
+
+
+
+			Selenide.$(By.id("btnSubmit")).click();
+			if (config.isDebug()) {
+				Selenide.screenshot(sysTime + "_05_ログイン-PW入力後");
+			}
+		}
+
 
 	}
 
 	public void initLogin(WebDriver webDriver, int wdIndex) {
+
+		logger.info("initialize yahoo login. [index=" + wdIndex + "] - START");
 
 		WebDriverRunner.setWebDriver(webDriver);
 
@@ -357,6 +388,7 @@ public class YahooAPIService {
 		TYahooAccount account = list.get(index);
 		this.login(account.getYahooAccountId(), account.getPassword());
 
+		logger.info("initialize yahoo login. [index=" + wdIndex + "] - END");
 	}
 
 }
