@@ -61,6 +61,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null  and updateBy != ''"> and UPDATE_BY = #{updateBy}</if>
             <if test="updateTime != null "> and UPDATE_TIME = #{updateTime}</if>
         </where>
+        order by BID_END_DATE asc, PRODUCT_CODE desc
     </select>
 
     <select id="selectTBidHistByHistDatetime" parameterType="Date" resultMap="TBidHistResult">
