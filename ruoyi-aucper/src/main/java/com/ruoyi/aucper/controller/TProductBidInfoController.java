@@ -23,6 +23,7 @@ import com.codeborne.selenide.SelenideElement;
 import com.ruoyi.aucper.config.YahooAuctionConifg;
 import com.ruoyi.aucper.constant.RealStatus;
 import com.ruoyi.aucper.domain.TProductBidInfo;
+import com.ruoyi.aucper.service.ITBidHistService;
 import com.ruoyi.aucper.service.ITProductBidInfoService;
 import com.ruoyi.aucper.yahooapi.StatusService;
 import com.ruoyi.aucper.yahooapi.YahooAPIService;
@@ -45,6 +46,9 @@ public class TProductBidInfoController extends BaseController
 {
     @Autowired
     private ITProductBidInfoService tProductBidInfoService;
+
+    @Autowired
+    private ITBidHistService tBidHistService;
 
     @Autowired
     private YahooAuctionConifg config;
@@ -134,6 +138,18 @@ public class TProductBidInfoController extends BaseController
 	@DeleteMapping("/{productCodes}")
     public AjaxResult remove(@PathVariable String[] productCodes)
     {
+        return toAjax(tProductBidInfoService.deleteTProductBidInfoByProductCodes(productCodes));
+    }
+
+    /**
+     * 商品入札履歴にコピー
+     */
+    @PreAuthorize("@ss.hasPermi('aucper:bid:edit')")
+    @Log(title = "商品入札情報", businessType = BusinessType.UPDATE)
+    @PutMapping("/{productCodes}")
+    public AjaxResult moveToHist(@PathVariable String[] productCodes)
+    {
+    	tBidHistService.insertTBidHistFromBid(productCodes);
         return toAjax(tProductBidInfoService.deleteTProductBidInfoByProductCodes(productCodes));
     }
 

@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.aucper.mapper.TBidHistMapper">
+
+    <resultMap type="TBidHist" id="TBidHistResult">
+        <result property="histDatetime"    column="HIST_DATETIME"    />
+        <result property="productCode"    column="PRODUCT_CODE"    />
+        <result property="productTitle"    column="PRODUCT_TITLE"    />
+        <result property="category"    column="CATEGORY"    />
+        <result property="nowPrice"    column="NOW_PRICE"    />
+        <result property="onholdPrice"    column="ONHOLD_PRICE"    />
+        <result property="bidStartDate"    column="BID_START_DATE"    />
+        <result property="bidEndDate"    column="BID_END_DATE"    />
+        <result property="bidLastUser"    column="BID_LAST_USER"    />
+        <result property="trusteeshipUser1"    column="TRUSTEESHIP_USER1"    />
+        <result property="trusteeshipUser2"    column="TRUSTEESHIP_USER2"    />
+        <result property="bidUserCount"    column="BID_USER_COUNT"    />
+        <result property="remainingTime"    column="REMAINING_TIME"    />
+        <result property="remainingTimeUnit"    column="REMAINING_TIME_UNIT"    />
+        <result property="bidStatus"    column="BID_STATUS"    />
+        <result property="taskKind"    column="TASK_KIND"    />
+        <result property="realStatus"    column="REAL_STATUS"    />
+        <result property="remark"    column="REMARK"    />
+        <result property="deleteFlag"    column="DELETE_FLAG"    />
+        <result property="updateCount"    column="UPDATE_COUNT"    />
+        <result property="createBy"    column="CREATE_BY"    />
+        <result property="createTime"    column="CREATE_TIME"    />
+        <result property="updateBy"    column="UPDATE_BY"    />
+        <result property="updateTime"    column="UPDATE_TIME"    />
+    </resultMap>
+
+    <sql id="selectTBidHistVo">
+        select HIST_DATETIME, PRODUCT_CODE, PRODUCT_TITLE, CATEGORY, NOW_PRICE, ONHOLD_PRICE, BID_START_DATE, BID_END_DATE, BID_LAST_USER, TRUSTEESHIP_USER1, TRUSTEESHIP_USER2, BID_USER_COUNT, REMAINING_TIME, REMAINING_TIME_UNIT, BID_STATUS, TASK_KIND, REAL_STATUS, REMARK, DELETE_FLAG, UPDATE_COUNT, CREATE_BY, CREATE_TIME, UPDATE_BY, UPDATE_TIME from T_BID_HIST
+    </sql>
+
+    <select id="selectTBidHistList" parameterType="TBidHist" resultMap="TBidHistResult">
+        <include refid="selectTBidHistVo"/>
+        <where>
+            <if test="productTitle != null  and productTitle != ''"> and PRODUCT_TITLE = #{productTitle}</if>
+            <if test="category != null  and category != ''"> and CATEGORY = #{category}</if>
+            <if test="nowPrice != null "> and NOW_PRICE = #{nowPrice}</if>
+            <if test="onholdPrice != null "> and ONHOLD_PRICE = #{onholdPrice}</if>
+            <if test="bidStartDate != null "> and BID_START_DATE = #{bidStartDate}</if>
+            <if test="bidEndDate != null "> and BID_END_DATE = #{bidEndDate}</if>
+            <if test="bidLastUser != null  and bidLastUser != ''"> and BID_LAST_USER = #{bidLastUser}</if>
+            <if test="trusteeshipUser1 != null  and trusteeshipUser1 != ''"> and TRUSTEESHIP_USER1 = #{trusteeshipUser1}</if>
+            <if test="trusteeshipUser2 != null  and trusteeshipUser2 != ''"> and TRUSTEESHIP_USER2 = #{trusteeshipUser2}</if>
+            <if test="bidUserCount != null "> and BID_USER_COUNT = #{bidUserCount}</if>
+            <if test="remainingTime != null "> and REMAINING_TIME = #{remainingTime}</if>
+            <if test="remainingTimeUnit != null  and remainingTimeUnit != ''"> and REMAINING_TIME_UNIT = #{remainingTimeUnit}</if>
+            <if test="bidStatus != null  and bidStatus != ''"> and BID_STATUS = #{bidStatus}</if>
+            <if test="taskKind != null  and taskKind != ''"> and TASK_KIND = #{taskKind}</if>
+            <if test="realStatus != null  and realStatus != ''"> and REAL_STATUS = #{realStatus}</if>
+            <if test="remark != null  and remark != ''"> and REMARK = #{remark}</if>
+            <if test="deleteFlag != null "> and DELETE_FLAG = #{deleteFlag}</if>
+            <if test="updateCount != null "> and UPDATE_COUNT = #{updateCount}</if>
+            <if test="createBy != null  and createBy != ''"> and CREATE_BY = #{createBy}</if>
+            <if test="createTime != null "> and CREATE_TIME = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and UPDATE_BY = #{updateBy}</if>
+            <if test="updateTime != null "> and UPDATE_TIME = #{updateTime}</if>
+        </where>
+    </select>
+
+    <select id="selectTBidHistByHistDatetime" parameterType="Date" resultMap="TBidHistResult">
+        <include refid="selectTBidHistVo"/>
+        where HIST_DATETIME = #{histDatetime}
+    </select>
+
+    <insert id="insertTBidHist" parameterType="TBidHist">
+        insert into T_BID_HIST
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="histDatetime != null">HIST_DATETIME,</if>
+            <if test="productCode != null">PRODUCT_CODE,</if>
+            <if test="productTitle != null">PRODUCT_TITLE,</if>
+            <if test="category != null">CATEGORY,</if>
+            <if test="nowPrice != null">NOW_PRICE,</if>
+            <if test="onholdPrice != null">ONHOLD_PRICE,</if>
+            <if test="bidStartDate != null">BID_START_DATE,</if>
+            <if test="bidEndDate != null">BID_END_DATE,</if>
+            <if test="bidLastUser != null">BID_LAST_USER,</if>
+            <if test="trusteeshipUser1 != null">TRUSTEESHIP_USER1,</if>
+            <if test="trusteeshipUser2 != null">TRUSTEESHIP_USER2,</if>
+            <if test="bidUserCount != null">BID_USER_COUNT,</if>
+            <if test="remainingTime != null">REMAINING_TIME,</if>
+            <if test="remainingTimeUnit != null">REMAINING_TIME_UNIT,</if>
+            <if test="bidStatus != null">BID_STATUS,</if>
+            <if test="taskKind != null">TASK_KIND,</if>
+            <if test="realStatus != null">REAL_STATUS,</if>
+            <if test="remark != null">REMARK,</if>
+            <if test="deleteFlag != null">DELETE_FLAG,</if>
+            <if test="updateCount != null">UPDATE_COUNT,</if>
+            <if test="createBy != null">CREATE_BY,</if>
+            <if test="createTime != null">CREATE_TIME,</if>
+            <if test="updateBy != null">UPDATE_BY,</if>
+            <if test="updateTime != null">UPDATE_TIME,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="histDatetime != null">#{histDatetime},</if>
+            <if test="productCode != null">#{productCode},</if>
+            <if test="productTitle != null">#{productTitle},</if>
+            <if test="category != null">#{category},</if>
+            <if test="nowPrice != null">#{nowPrice},</if>
+            <if test="onholdPrice != null">#{onholdPrice},</if>
+            <if test="bidStartDate != null">#{bidStartDate},</if>
+            <if test="bidEndDate != null">#{bidEndDate},</if>
+            <if test="bidLastUser != null">#{bidLastUser},</if>
+            <if test="trusteeshipUser1 != null">#{trusteeshipUser1},</if>
+            <if test="trusteeshipUser2 != null">#{trusteeshipUser2},</if>
+            <if test="bidUserCount != null">#{bidUserCount},</if>
+            <if test="remainingTime != null">#{remainingTime},</if>
+            <if test="remainingTimeUnit != null">#{remainingTimeUnit},</if>
+            <if test="bidStatus != null">#{bidStatus},</if>
+            <if test="taskKind != null">#{taskKind},</if>
+            <if test="realStatus != null">#{realStatus},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="deleteFlag != null">#{deleteFlag},</if>
+            <if test="updateCount != null">#{updateCount},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTBidHist" parameterType="TBidHist">
+        update T_BID_HIST
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productCode != null">PRODUCT_CODE = #{productCode},</if>
+            <if test="productTitle != null">PRODUCT_TITLE = #{productTitle},</if>
+            <if test="category != null">CATEGORY = #{category},</if>
+            <if test="nowPrice != null">NOW_PRICE = #{nowPrice},</if>
+            <if test="onholdPrice != null">ONHOLD_PRICE = #{onholdPrice},</if>
+            <if test="bidStartDate != null">BID_START_DATE = #{bidStartDate},</if>
+            <if test="bidEndDate != null">BID_END_DATE = #{bidEndDate},</if>
+            <if test="bidLastUser != null">BID_LAST_USER = #{bidLastUser},</if>
+            <if test="trusteeshipUser1 != null">TRUSTEESHIP_USER1 = #{trusteeshipUser1},</if>
+            <if test="trusteeshipUser2 != null">TRUSTEESHIP_USER2 = #{trusteeshipUser2},</if>
+            <if test="bidUserCount != null">BID_USER_COUNT = #{bidUserCount},</if>
+            <if test="remainingTime != null">REMAINING_TIME = #{remainingTime},</if>
+            <if test="remainingTimeUnit != null">REMAINING_TIME_UNIT = #{remainingTimeUnit},</if>
+            <if test="bidStatus != null">BID_STATUS = #{bidStatus},</if>
+            <if test="taskKind != null">TASK_KIND = #{taskKind},</if>
+            <if test="realStatus != null">REAL_STATUS = #{realStatus},</if>
+            <if test="remark != null">REMARK = #{remark},</if>
+            <if test="deleteFlag != null">DELETE_FLAG = #{deleteFlag},</if>
+            <if test="updateCount != null">UPDATE_COUNT = #{updateCount},</if>
+            <if test="createBy != null">CREATE_BY = #{createBy},</if>
+            <if test="createTime != null">CREATE_TIME = #{createTime},</if>
+            <if test="updateBy != null">UPDATE_BY = #{updateBy},</if>
+            <if test="updateTime != null">UPDATE_TIME = #{updateTime},</if>
+        </trim>
+        where HIST_DATETIME = #{histDatetime}
+    </update>
+
+    <delete id="deleteTBidHistByHistDatetime" parameterType="Date">
+        delete from T_BID_HIST where HIST_DATETIME = #{histDatetime}
+    </delete>
+
+    <delete id="deleteTBidHistByHistDatetimes" parameterType="String">
+        delete from T_BID_HIST where HIST_DATETIME in
+        <foreach item="histDatetime" collection="array" open="(" separator="," close=")">
+            #{histDatetime}
+        </foreach>
+    </delete>
+
+    <insert id="insertTBidHistFromBid" parameterType="String">
+        insert into T_BID_HIST
+        select sysdate(), bid.* from T_PRODUCT_BID_INFO bid
+        where bid.BID_STATUS = '2' and bid.PRODUCT_CODE in
+        <foreach item="productCode" collection="array" open="(" separator="," close=")">
+            #{productCode}
+        </foreach>
+    </insert>
+
+</mapper>
