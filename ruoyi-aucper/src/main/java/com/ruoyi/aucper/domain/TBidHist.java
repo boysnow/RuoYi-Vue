@@ -2,15 +2,16 @@ package com.ruoyi.aucper.domain;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import com.fasterxml.jackson.annotation.JsonFormat;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 
 /**
  * 商品入札履歴对象 T_BID_HIST
- * 
+ *
  * @author ruoyi
  * @date 2022-09-04
  */
@@ -43,8 +44,8 @@ public class TBidHist extends BaseEntity
     private Date bidStartDate;
 
     /** 入札終了日時 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @Excel(name = "入札終了日時", width = 30, dateFormat = "yyyy-MM-dd")
+//    @JsonFormat(pattern = "yyyy-MM-dd")
+//    @Excel(name = "入札終了日時", width = 30, dateFormat = "yyyy-MM-dd")
     private Date bidEndDate;
 
     /** 最後入札者 */
@@ -76,156 +77,156 @@ public class TBidHist extends BaseEntity
     /** リアルステータス　1：Watching、2：Updating、3：Bidding */
     private String realStatus;
 
-    public void setHistDatetime(Date histDatetime) 
+    public void setHistDatetime(Date histDatetime)
     {
         this.histDatetime = histDatetime;
     }
 
-    public Date getHistDatetime() 
+    public Date getHistDatetime()
     {
         return histDatetime;
     }
-    public void setProductCode(String productCode) 
+    public void setProductCode(String productCode)
     {
         this.productCode = productCode;
     }
 
-    public String getProductCode() 
+    public String getProductCode()
     {
         return productCode;
     }
-    public void setProductTitle(String productTitle) 
+    public void setProductTitle(String productTitle)
     {
         this.productTitle = productTitle;
     }
 
-    public String getProductTitle() 
+    public String getProductTitle()
     {
         return productTitle;
     }
-    public void setCategory(String category) 
+    public void setCategory(String category)
     {
         this.category = category;
     }
 
-    public String getCategory() 
+    public String getCategory()
     {
         return category;
     }
-    public void setNowPrice(BigDecimal nowPrice) 
+    public void setNowPrice(BigDecimal nowPrice)
     {
         this.nowPrice = nowPrice;
     }
 
-    public BigDecimal getNowPrice() 
+    public BigDecimal getNowPrice()
     {
         return nowPrice;
     }
-    public void setOnholdPrice(BigDecimal onholdPrice) 
+    public void setOnholdPrice(BigDecimal onholdPrice)
     {
         this.onholdPrice = onholdPrice;
     }
 
-    public BigDecimal getOnholdPrice() 
+    public BigDecimal getOnholdPrice()
     {
         return onholdPrice;
     }
-    public void setBidStartDate(Date bidStartDate) 
+    public void setBidStartDate(Date bidStartDate)
     {
         this.bidStartDate = bidStartDate;
     }
 
-    public Date getBidStartDate() 
+    public Date getBidStartDate()
     {
         return bidStartDate;
     }
-    public void setBidEndDate(Date bidEndDate) 
+    public void setBidEndDate(Date bidEndDate)
     {
         this.bidEndDate = bidEndDate;
     }
 
-    public Date getBidEndDate() 
+    public Date getBidEndDate()
     {
         return bidEndDate;
     }
-    public void setBidLastUser(String bidLastUser) 
+    public void setBidLastUser(String bidLastUser)
     {
         this.bidLastUser = bidLastUser;
     }
 
-    public String getBidLastUser() 
+    public String getBidLastUser()
     {
         return bidLastUser;
     }
-    public void setTrusteeshipUser1(String trusteeshipUser1) 
+    public void setTrusteeshipUser1(String trusteeshipUser1)
     {
         this.trusteeshipUser1 = trusteeshipUser1;
     }
 
-    public String getTrusteeshipUser1() 
+    public String getTrusteeshipUser1()
     {
         return trusteeshipUser1;
     }
-    public void setTrusteeshipUser2(String trusteeshipUser2) 
+    public void setTrusteeshipUser2(String trusteeshipUser2)
     {
         this.trusteeshipUser2 = trusteeshipUser2;
     }
 
-    public String getTrusteeshipUser2() 
+    public String getTrusteeshipUser2()
     {
         return trusteeshipUser2;
     }
-    public void setBidUserCount(Integer bidUserCount) 
+    public void setBidUserCount(Integer bidUserCount)
     {
         this.bidUserCount = bidUserCount;
     }
 
-    public Integer getBidUserCount() 
+    public Integer getBidUserCount()
     {
         return bidUserCount;
     }
-    public void setRemainingTime(Integer remainingTime) 
+    public void setRemainingTime(Integer remainingTime)
     {
         this.remainingTime = remainingTime;
     }
 
-    public Integer getRemainingTime() 
+    public Integer getRemainingTime()
     {
         return remainingTime;
     }
-    public void setRemainingTimeUnit(String remainingTimeUnit) 
+    public void setRemainingTimeUnit(String remainingTimeUnit)
     {
         this.remainingTimeUnit = remainingTimeUnit;
     }
 
-    public String getRemainingTimeUnit() 
+    public String getRemainingTimeUnit()
     {
         return remainingTimeUnit;
     }
-    public void setBidStatus(String bidStatus) 
+    public void setBidStatus(String bidStatus)
     {
         this.bidStatus = bidStatus;
     }
 
-    public String getBidStatus() 
+    public String getBidStatus()
     {
         return bidStatus;
     }
-    public void setTaskKind(String taskKind) 
+    public void setTaskKind(String taskKind)
     {
         this.taskKind = taskKind;
     }
 
-    public String getTaskKind() 
+    public String getTaskKind()
     {
         return taskKind;
     }
-    public void setRealStatus(String realStatus) 
+    public void setRealStatus(String realStatus)
     {
         this.realStatus = realStatus;
     }
 
-    public String getRealStatus() 
+    public String getRealStatus()
     {
         return realStatus;
     }
