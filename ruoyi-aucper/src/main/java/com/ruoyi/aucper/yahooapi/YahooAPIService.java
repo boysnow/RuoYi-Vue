@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.time.Duration;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -26,6 +27,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
@@ -137,7 +139,6 @@ public class YahooAPIService {
 
 
     		// JSONより取得できなかった場合、スクレイピングする
-    		existJson = false;
     		if (!existJson) {
     			// 商品（オークション）のタイトル
     			exhibitInfoDTO.setTitle($(".ProductTitle__text").text());
@@ -151,8 +152,8 @@ public class YahooAPIService {
     			exhibitInfoDTO.setPrice(price);
 
     			// 現在の入札数
-    			String bids = $(".Count__count .Count__number").text();
-    			System.out.println("before=" + bids);
+    			System.out.println("get bids before");
+    			String bids = $(".Count__count .Count__number").should(Condition.appear, Duration.ofMillis(500)).text();
     			bids = bids.replaceAll("[^0-9](.|\n)*$", "");
     			System.out.println("after=" + bids);
     			exhibitInfoDTO.setBids(NumberUtils.toInt(bids));
