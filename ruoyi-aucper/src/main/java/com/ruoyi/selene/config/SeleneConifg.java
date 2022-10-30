@@ -13,6 +13,7 @@ public class SeleneConifg {
 		public static final String GECKO = "webdriver.gecko.driver";
 	}
 
+    private static boolean enabled;
     private static String webdriverChrome;
     private static String webdriverGecko;
     private static int poolMaxSize;
@@ -20,7 +21,11 @@ public class SeleneConifg {
     private static String gridJsonHub;
     private static String gridJsonNode;
 
-    @Value("${selene.webdriver.chrome}")
+	@Value("${selene.enabled}")
+	public static void setEnabled(boolean enabled) {
+		SeleneConifg.enabled = enabled;
+	}
+	@Value("${selene.webdriver.chrome}")
 	public void setWebdriverChrome(String webdriverChrome) {
     	SeleneConifg.webdriverChrome = webdriverChrome;
 	}
@@ -45,6 +50,9 @@ public class SeleneConifg {
 		SeleneConifg.gridJsonNode = gridJsonNode;
 	}
 
+    public static boolean isEnabled() {
+		return enabled;
+	}
 	public static String getWebdriverChrome() {
 		return webdriverChrome;
 	}

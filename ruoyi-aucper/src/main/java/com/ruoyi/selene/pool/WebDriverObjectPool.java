@@ -25,6 +25,10 @@ public class WebDriverObjectPool extends CommonsPool2TargetSource {
 
     public void initializeObjects() throws Exception {
 
+    	// Selene使用可否チェック
+    	if (!SeleneConifg.isEnabled()) {
+    		return;
+    	}
         initializeGridAndNode();
 
         // 初期化に時間が要する為、少し待機

@@ -1,5 +1,6 @@
 ### selene関連情報定義 ###
 selene:
+  enabled: false
   webdriver:
     chrome: C:/pleiades/workspace_aucper/RuoYi-Vue/ruoyi-aucper/webdrivers/chromedriver.exe
     gecko: C:/pleiades/workspace_aucper/RuoYi-Vue/ruoyi-aucper/webdrivers/geckodriver.exe
