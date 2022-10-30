@@ -126,11 +126,11 @@ public class YahooAPIService {
     				exhibitInfoDTO.setEndDate(DateUtils.parseDate(endDate, FMT_DATE_JSON));
     			}
     			// 状態
-    			String isClosed = items.get("isClosed");
-    			exhibitInfoDTO.setStatus(BidStatus.open.value);
-    			if ("1".equals(isClosed)) {
-    				exhibitInfoDTO.setStatus(BidStatus.closed.value);
-    			}
+//    			String isClosed = items.get("isClosed");
+//    			exhibitInfoDTO.setStatus(BidStatus.open.value);
+//    			if (BidStatus.closed.value.equals(isClosed)) {
+//    				exhibitInfoDTO.setStatus(BidStatus.closed.value);
+//    			}
 
     		} catch (Exception e) {
     			logger.warn("Failed to get bidinfo by json pageData.", e);
@@ -177,13 +177,13 @@ public class YahooAPIService {
     					e.printStackTrace();
     				}
     			}
-    			// 状態
-    			String statusStr = $(".Count__count--sideLine .Count__number").getText();
-    			exhibitInfoDTO.setStatus(BidStatus.open.value);
-    			if (StringUtils.isNotEmpty(statusStr) && statusStr.startsWith(BidStatus.closed.text)) {
-    				exhibitInfoDTO.setStatus(BidStatus.closed.value);
-    			}
     		}
+			// 状態
+			String statusStr = $(".Count__count--sideLine .Count__number").shouldBe(Condition.appear, Duration.ofMillis(500)).getText();
+			exhibitInfoDTO.setStatus(BidStatus.open.value);
+			if (StringUtils.isNotEmpty(statusStr) && statusStr.startsWith(BidStatus.closed.text)) {
+				exhibitInfoDTO.setStatus(BidStatus.closed.value);
+			}
 
     		// Shopの場合、消費税を取得
 			BigDecimal tax = BigDecimal.ZERO;
