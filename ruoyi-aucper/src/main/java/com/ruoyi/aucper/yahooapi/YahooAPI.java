@@ -12,6 +12,7 @@ import com.ruoyi.aucper.constant.RemainingTimeUnit;
 import com.ruoyi.aucper.domain.TProductBidInfo;
 import com.ruoyi.aucper.service.ITProductBidInfoService;
 import com.ruoyi.common.exception.job.TaskException;
+import com.ruoyi.selene.config.SeleneConifg;
 
 @Service
 public class YahooAPI {
@@ -24,6 +25,11 @@ public class YahooAPI {
     private ITProductBidInfoService tProductBidInfoService;
 
 	public void updateBidInfo(String params) throws TaskException {
+
+		// Seleneが無効の場合、何もしない
+		if (!SeleneConifg.isEnabled()) {
+			return;
+		}
 
 		logger.info("update bid info begin.[{}]", params);
 
