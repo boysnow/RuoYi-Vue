@@ -40,6 +40,7 @@ import com.ruoyi.aucper.domain.TYahooAccount;
 import com.ruoyi.aucper.mapper.TProductBidInfoMapper;
 import com.ruoyi.aucper.mapper.TYahooAccountMapper;
 import com.ruoyi.aucper.yahooapi.dto.ExhibitInfoDTO;
+import com.ruoyi.selene.config.SeleneConifg;
 
 @Service
 public class YahooAPIService {
@@ -75,6 +76,11 @@ public class YahooAPIService {
 
     	WebDriver webDriver = null;
     	try {
+    		// Seleneが無効の場合、何もしない
+    		if (!SeleneConifg.isEnabled()) {
+    			return;
+    		}
+
     		webDriver = (WebDriver) poolTargetSourceWebDriver.getTarget();
     		WebDriverRunner.setWebDriver(webDriver);
 
