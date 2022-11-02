@@ -1,6 +1,7 @@
 ### selene関連情報定義 ###
 selene:
-  enabled: false
+  # 0:無効モード　1:組込モード　2:独立モード
+  mode: 1
   webdriver:
     chrome: C:/pleiades/workspace_aucper/RuoYi-Vue/ruoyi-aucper/webdrivers/chromedriver.exe
     gecko: C:/pleiades/workspace_aucper/RuoYi-Vue/ruoyi-aucper/webdrivers/geckodriver.exe

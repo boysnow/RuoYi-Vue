@@ -77,7 +77,7 @@ public class YahooAPIService {
     	WebDriver webDriver = null;
     	try {
     		// Seleneが無効の場合、何もしない
-    		if (!SeleneConifg.isEnabled()) {
+    		if (SeleneConifg.isInvalidMode()) {
     			return;
     		}
 

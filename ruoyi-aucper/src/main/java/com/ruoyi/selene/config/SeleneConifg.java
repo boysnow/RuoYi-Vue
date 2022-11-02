@@ -13,7 +13,7 @@ public class SeleneConifg {
 		public static final String GECKO = "webdriver.gecko.driver";
 	}
 
-    private static boolean enabled;
+    private static String mode;
     private static String webdriverChrome;
     private static String webdriverGecko;
     private static int poolMaxSize;
@@ -21,9 +21,9 @@ public class SeleneConifg {
     private static String gridJsonHub;
     private static String gridJsonNode;
 
-	@Value("${selene.enabled}")
-	public static void setEnabled(boolean enabled) {
-		SeleneConifg.enabled = enabled;
+	@Value("${selene.mode}")
+	public static void setMode(String mode) {
+		SeleneConifg.mode = mode;
 	}
 	@Value("${selene.webdriver.chrome}")
 	public void setWebdriverChrome(String webdriverChrome) {
@@ -50,9 +50,35 @@ public class SeleneConifg {
 		SeleneConifg.gridJsonNode = gridJsonNode;
 	}
 
-    public static boolean isEnabled() {
-		return enabled;
+    public enum Mode {
+    	invalid("0"), embed("1"), standalone("2");
+        public String value;
+    	Mode(String value) {
+    		this.value = value;
+    	}
+
+    }
+    public static String getMode() {
+		return mode;
 	}
+    public static boolean isInvalidMode() {
+    	if (Mode.invalid.value.equals(mode)) {
+    		return true;
+    	}
+    	return false;
+    }
+    public static boolean isEmbedMode() {
+    	if (Mode.embed.value.equals(mode)) {
+    		return true;
+    	}
+    	return false;
+    }
+    public static boolean isStandaloneMode() {
+    	if (Mode.standalone.value.equals(mode)) {
+    		return true;
+    	}
+    	return false;
+    }
 	public static String getWebdriverChrome() {
 		return webdriverChrome;
 	}

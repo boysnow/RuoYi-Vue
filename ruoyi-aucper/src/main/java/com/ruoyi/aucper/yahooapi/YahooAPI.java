@@ -27,7 +27,7 @@ public class YahooAPI {
 	public void updateBidInfo(String params) throws TaskException {
 
 		// Seleneが無効の場合、何もしない
-		if (!SeleneConifg.isEnabled()) {
+		if (SeleneConifg.isInvalidMode()) {
 			return;
 		}
 

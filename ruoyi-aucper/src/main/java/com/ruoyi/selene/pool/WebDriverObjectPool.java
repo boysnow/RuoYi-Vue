@@ -26,7 +26,7 @@ public class WebDriverObjectPool extends CommonsPool2TargetSource {
     public void initializeObjects() throws Exception {
 
     	// Selene使用可否チェック
-    	if (!SeleneConifg.isEnabled()) {
+    	if (SeleneConifg.isInvalidMode()) {
     		return;
     	}
         initializeGridAndNode();
