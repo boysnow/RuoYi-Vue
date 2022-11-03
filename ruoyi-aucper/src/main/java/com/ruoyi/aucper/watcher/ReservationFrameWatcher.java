@@ -32,9 +32,10 @@ import com.zjiecode.wxpusher.client.bean.WxUser;
 public class ReservationFrameWatcher {
 
 	private static final String APP_TOKEN = "AT_0UihKvBoi92ExbEigVWoUddrEAo9Grlq";
-	private static final String URL = "https://www.31sumai.com/attend/X1604/?utm_source=straight&utm_medium=mm&utm_campaign=X1604&utm_term=limited1&utm_content=1&mkt_tok=NDI2LUJDTy03MDMAAAGEjguP8VGbWQWrGa7tpQYfYuoPiSd6q6UQWwwK-JhxrUkzhaI4ypDwyaxghOSeofclaqXJain7L4gu7Dxm05RqcUzchnJBqtqvUqgu7b6hd8GLTQRc";
+//	private static final String URL = "https://www.31sumai.com/attend/X1604/?utm_source=straight&utm_medium=mm&utm_campaign=X1604&utm_term=limited1&utm_content=1&mkt_tok=NDI2LUJDTy03MDMAAAGEjguP8VGbWQWrGa7tpQYfYuoPiSd6q6UQWwwK-JhxrUkzhaI4ypDwyaxghOSeofclaqXJain7L4gu7Dxm05RqcUzchnJBqtqvUqgu7b6hd8GLTQRc";
+	private static final String URL = "https://www.31sumai.com/attend/X1913/?utm_source=AtOnce&utm_medium=mm&utm_campaign=X1913&utm_term=20221031&utm_content=3&mkt_tok=NDI2LUJDTy03MDMAAAGHzAfq4LNWZN9wWWWSQqK0_9Yf6y2yLIptKBfvbYd3Z14eb6JPqGWSnVQk04gG0HombWVfDj8JxVArcjv91EpHxo4mE69LxNpoTS5JGtLKZYt8GwQ";
 	private static final String NOT_ACCEPTED = "来場予約を受け付けておりません";
-	
+
 	private static final String MSG_FMT = "%s　予約可能：%s日";
 
     private static final Logger logger = LoggerFactory.getLogger(ReservationFrameWatcher.class);
@@ -57,7 +58,7 @@ public class ReservationFrameWatcher {
     		 * 開始ログや更新処理などをここ以降に実装する
     		 */
     		WebDriverRunner.setWebDriver(webDriver);
-    		logger.info("@@@@@@@@ watching harumi flag - START");
+    		logger.info("@@@@@@@@ watching 31sumai - START");
     		logger.info("### use webdriver:{}", webDriver.toString());
 
         	Selenide.open(URL);
@@ -65,7 +66,7 @@ public class ReservationFrameWatcher {
         	WebElement header = Selenide.$(By.cssSelector("div.ui-datepicker-header"));
 
         	if (!header.isDisplayed()) {
-        		logger.info("@@@@@@@@ watching harumi flag - END[not accepted]");
+        		logger.info("@@@@@@@@ watching 31sumai - END[not accepted]");
     			return;
     		}
 
@@ -97,10 +98,10 @@ public class ReservationFrameWatcher {
         	}
 
 
-    		logger.info("@@@@@@@@ watching harumi flag - END");
+    		logger.info("@@@@@@@@ watching 31sumai - END");
 
     	} catch (Exception e) {
-    		logger.error("Failed to watching harumi flag", e);
+    		logger.error("Failed to watching 31sumai", e);
     	} finally {
             try {
 				poolTargetSourceWebDriver.releaseTarget(webDriver);
