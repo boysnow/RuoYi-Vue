@@ -19,6 +19,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.target.CommonsPool2TargetSource;
@@ -31,6 +32,7 @@ import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
+import com.codeborne.selenide.SelenideWait;
 import com.codeborne.selenide.WebDriverRunner;
 import com.ruoyi.aucper.config.YahooAuctionConifg;
 import com.ruoyi.aucper.constant.BidStatus;
@@ -104,9 +106,12 @@ public class YahooAPIService {
 
 
     		boolean existJson = true;
-    		Map<String, Map<String, String>> pageData = executeJavaScript("return pageData;");
 
     		try {
+
+    			new SelenideWait(webDriver, 1000, 200).until(ExpectedConditions.javaScriptThrowsNoExceptions("return pageData;"));
+        		Map<String, Map<String, String>> pageData = executeJavaScript("return pageData;");
+        		
     			Map<String, String> items = pageData.get("items");
 
     			// 商品（オークション）のタイトル
@@ -159,7 +164,7 @@ public class YahooAPIService {
 
     			// 現在の入札数
     			System.out.println("get bids before");
-    			String bids = $(".Count__count .Count__number").should(Condition.appear, Duration.ofMillis(500)).text();
+    			String bids = $(".Count__count .Count__number").should(Condition.appear, Duration.ofMillis(1000)).text();
     			bids = bids.replaceAll("[^0-9](.|\n)*$", "");
     			System.out.println("after=" + bids);
     			exhibitInfoDTO.setBids(NumberUtils.toInt(bids));
