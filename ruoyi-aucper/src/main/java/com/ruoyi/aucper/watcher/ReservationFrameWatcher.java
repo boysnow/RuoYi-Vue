@@ -66,12 +66,15 @@ public class ReservationFrameWatcher {
     			return;
     		}
     		String url = null;
+        	String msg = "";
     		switch(params) {
     		case "harumi":
     			url = URL_HARUMI;
+    			msg = "【晴海フラッグ】";
     			break;
     		case "hamamatsucho":
     			url = URL_HAMAMATSUCHO;
+    			msg = "【浜松町】";
     			break;
     		}
             if (StringUtils.isEmpty(url)) {
@@ -88,7 +91,8 @@ public class ReservationFrameWatcher {
     			return;
     		}
 
-        	String msg = "";
+        	msg = msg + System.lineSeparator();
+        	boolean existFlag = false;
         	int count = 1;
         	while (true) {
 
@@ -100,6 +104,7 @@ public class ReservationFrameWatcher {
             	int okDays2 = calendar.findElements(By.cssSelector("table.ui-datepicker-calendar td.status_3")).size();
 
             	if (okDays1 > 0 || okDays2 > 0) {
+            		existFlag = true;
                 	msg = msg + String.format(MSG_FMT, yearMount, (okDays1 + okDays2)) + System.lineSeparator();
             	}
 
@@ -111,7 +116,7 @@ public class ReservationFrameWatcher {
         		count++;
         	}
 
-        	if (StringUtils.isNotEmpty(msg)) {
+        	if (existFlag) {
         		this.sendMsg(msg);
         	}
 
