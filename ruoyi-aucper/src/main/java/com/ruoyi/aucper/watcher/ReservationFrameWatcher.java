@@ -32,8 +32,8 @@ import com.zjiecode.wxpusher.client.bean.WxUser;
 public class ReservationFrameWatcher {
 
 	private static final String APP_TOKEN = "AT_0UihKvBoi92ExbEigVWoUddrEAo9Grlq";
-//	private static final String URL = "https://www.31sumai.com/attend/X1604/?utm_source=straight&utm_medium=mm&utm_campaign=X1604&utm_term=limited1&utm_content=1&mkt_tok=NDI2LUJDTy03MDMAAAGEjguP8VGbWQWrGa7tpQYfYuoPiSd6q6UQWwwK-JhxrUkzhaI4ypDwyaxghOSeofclaqXJain7L4gu7Dxm05RqcUzchnJBqtqvUqgu7b6hd8GLTQRc";
-	private static final String URL = "https://www.31sumai.com/attend/X1913/?utm_source=AtOnce&utm_medium=mm&utm_campaign=X1913&utm_term=20221031&utm_content=3&mkt_tok=NDI2LUJDTy03MDMAAAGHzAfq4LNWZN9wWWWSQqK0_9Yf6y2yLIptKBfvbYd3Z14eb6JPqGWSnVQk04gG0HombWVfDj8JxVArcjv91EpHxo4mE69LxNpoTS5JGtLKZYt8GwQ";
+	private static final String URL_HARUMI = "https://www.31sumai.com/attend/X1604/?utm_source=straight&utm_medium=mm&utm_campaign=X1604&utm_term=limited1&utm_content=1&mkt_tok=NDI2LUJDTy03MDMAAAGEjguP8VGbWQWrGa7tpQYfYuoPiSd6q6UQWwwK-JhxrUkzhaI4ypDwyaxghOSeofclaqXJain7L4gu7Dxm05RqcUzchnJBqtqvUqgu7b6hd8GLTQRc";
+	private static final String URL_HAMAMATSUCHO = "https://www.31sumai.com/attend/X1913/?utm_source=AtOnce&utm_medium=mm&utm_campaign=X1913&utm_term=20221031&utm_content=3&mkt_tok=NDI2LUJDTy03MDMAAAGHzAfq4LNWZN9wWWWSQqK0_9Yf6y2yLIptKBfvbYd3Z14eb6JPqGWSnVQk04gG0HombWVfDj8JxVArcjv91EpHxo4mE69LxNpoTS5JGtLKZYt8GwQ";
 	private static final String NOT_ACCEPTED = "来場予約を受け付けておりません";
 
 	private static final String MSG_FMT = "%s　予約可能：%s日";
@@ -45,9 +45,9 @@ public class ReservationFrameWatcher {
     private CommonsPool2TargetSource poolTargetSourceWebDriver;
 
     /**
-     * Watching晴海フラッグの予約枠
+     * Watching三井不動産の予約枠
      */
-    public void watchHarumiFlag() {
+    public void watch31sumai(String params) {
 
     	WebDriver webDriver = null;
     	try {
@@ -58,10 +58,28 @@ public class ReservationFrameWatcher {
     		 * 開始ログや更新処理などをここ以降に実装する
     		 */
     		WebDriverRunner.setWebDriver(webDriver);
-    		logger.info("@@@@@@@@ watching 31sumai - START");
+    		logger.info("@@@@@@@@ watching 31sumai - START [{}]", params);
     		logger.info("### use webdriver:{}", webDriver.toString());
 
-        	Selenide.open(URL);
+    		if (StringUtils.isEmpty(params)) {
+        		logger.info("@@@@@@@@ watching 31sumai - END[not parameter]");
+    			return;
+    		}
+    		String url = null;
+    		switch(params) {
+    		case "harumi":
+    			url = URL_HARUMI;
+    			break;
+    		case "hamamatsucho":
+    			url = URL_HAMAMATSUCHO;
+    			break;
+    		}
+            if (StringUtils.isEmpty(url)) {
+        		logger.info("@@@@@@@@ watching 31sumai - END[not supported:{}]", params);
+    			return;
+            }
+
+        	Selenide.open(url);
 
         	WebElement header = Selenide.$(By.cssSelector("div.ui-datepicker-header"));
 
