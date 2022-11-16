@@ -158,7 +158,7 @@ public class YahooAPIService {
     			try {
     				price = org.springframework.util.NumberUtils.parseNumber($(".Price__value").text().trim(), BigDecimal.class, format);
     			} catch (Exception e) {
-    				e.printStackTrace();
+    				logger.debug(e.getMessage(), e);
     			}
     			exhibitInfoDTO.setPrice(price);
 
@@ -176,7 +176,7 @@ public class YahooAPIService {
     				try {
     					exhibitInfoDTO.setStartDate(DateUtils.parseDate(starttime, FMT_DATE_HTML));
     				} catch (ParseException e) {
-    					e.printStackTrace();
+    					logger.debug(e.getMessage(), e);
     				}
     			}
     			// 出品終了日時
@@ -185,15 +185,19 @@ public class YahooAPIService {
     				try {
     					exhibitInfoDTO.setEndDate(DateUtils.parseDate(endDate, FMT_DATE_HTML));
     				} catch (ParseException e) {
-    					e.printStackTrace();
+    					logger.debug(e.getMessage(), e);
     				}
     			}
     		}
 			// 状態
-			String statusStr = $(".Count__count--sideLine .Count__number").shouldBe(Condition.appear, Duration.ofMillis(500)).getText();
 			exhibitInfoDTO.setStatus(BidStatus.open.value);
-			if (StringUtils.isNotEmpty(statusStr) && statusStr.startsWith(BidStatus.closed.text)) {
-				exhibitInfoDTO.setStatus(BidStatus.closed.value);
+			try {
+				String statusStr = $(".Count__count--sideLine .Count__number").shouldBe(Condition.visible, Duration.ofMillis(500)).getText();
+				if (StringUtils.isNotEmpty(statusStr) && statusStr.startsWith(BidStatus.closed.text)) {
+					exhibitInfoDTO.setStatus(BidStatus.closed.value);
+				}
+			} catch (Exception e) {
+				logger.debug(e.getMessage(), e);
 			}
 
     		// Shopの場合、消費税を取得
@@ -203,7 +207,7 @@ public class YahooAPIService {
 				taxStr = taxStr.replaceAll("（|税込|税|）", "");
 				tax = org.springframework.util.NumberUtils.parseNumber(taxStr.trim(), BigDecimal.class, format);
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.debug(e.getMessage(), e);
 			}
 			if (BigDecimal.ZERO.compareTo(tax) != 0) {
 				exhibitInfoDTO.setPrice(tax);
@@ -323,7 +327,6 @@ public class YahooAPIService {
 
 		Date nowTime = com.ruoyi.common.utils.DateUtils.getNowDate();
 		if (existFlag) {
-			bidInfo.setUpdateTime(com.ruoyi.common.utils.DateUtils.getNowDate());
 			bidInfo.setUpdateTime(nowTime);
 			tProductBidInfoMapper.updateTProductBidInfo(bidInfo);
 		} else {
