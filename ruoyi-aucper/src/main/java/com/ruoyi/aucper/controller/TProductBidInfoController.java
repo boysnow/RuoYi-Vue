@@ -1,13 +1,16 @@
 package com.ruoyi.aucper.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.springframework.aop.target.CommonsPool2TargetSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,21 +21,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.codeborne.selenide.Selenide;
-import com.codeborne.selenide.SelenideElement;
+import com.codeborne.selenide.WebDriverRunner;
 import com.ruoyi.aucper.config.YahooAuctionConifg;
 import com.ruoyi.aucper.constant.RealStatus;
 import com.ruoyi.aucper.domain.TProductBidInfo;
 import com.ruoyi.aucper.service.ITBidHistService;
 import com.ruoyi.aucper.service.ITProductBidInfoService;
 import com.ruoyi.aucper.yahooapi.StatusService;
-import com.ruoyi.aucper.yahooapi.YahooAPIService;
+import com.ruoyi.aucper.yahooapi.YahooProductBidInfoService;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.selene.config.SeleneConifg;
 
 /**
  * 商品入札情報Controller
@@ -54,10 +57,13 @@ public class TProductBidInfoController extends BaseController
     private YahooAuctionConifg config;
 
     @Autowired
-    private YahooAPIService yahooAPIService;
+    private YahooProductBidInfoService yahooProductBidInfoService;
 
     @Autowired
     private StatusService statusService;
+    @Autowired
+    @Qualifier("poolTargetSourceWebDriver")
+    private CommonsPool2TargetSource poolTargetSourceWebDriver;
 
     /**
      * 查询商品入札情報列表
@@ -174,7 +180,7 @@ public class TProductBidInfoController extends BaseController
     {
     	for (String code : productCodes) {
     		statusService.updateRealStatus(code, RealStatus.Updating);
-        	yahooAPIService.getExhibitInfoById(code);
+    		yahooProductBidInfoService.getExhibitInfoById(code);
     	}
         return AjaxResult.success();
     }
@@ -182,43 +188,85 @@ public class TProductBidInfoController extends BaseController
     @PreAuthorize("@ss.hasPermi('aucper:bid:query')")
     @PostMapping(value = "/login")
     public AjaxResult doLogin() {
-    	System.out.println("login..................................");
 
+    	logger.info("Login 1st.");
 
-    	Selenide.open("https://login.yahoo.co.jp/config/login");
+    	logger.info("ActiveCount=" + poolTargetSourceWebDriver.getActiveCount());
+    	logger.info("IdleCount=" + poolTargetSourceWebDriver.getIdleCount());
+    	logger.info("MaxIdle=" + poolTargetSourceWebDriver.getMaxIdle());
+    	logger.info("MaxSize=" + poolTargetSourceWebDriver.getMaxSize());
+    	logger.info("MinIdle=" + poolTargetSourceWebDriver.getMinIdle());
 
-    	Selenide.screenshot("1001.jpg");
+    	// check max size
+    	int poolSize = poolTargetSourceWebDriver.getActiveCount() + poolTargetSourceWebDriver.getIdleCount();
+    	if (poolSize >= SeleneConifg.getPoolMaxSize()) {
+			return AjaxResult.error("WebDriverプールの最大サイズに達しています。");
+    	}
 
-		SelenideElement username = Selenide.$(By.id("username"));
-		System.out.println(username.isDisplayed());
-		if (username.isDisplayed()) {
-			username.val("boysnow336");
-			Selenide.$(By.id("btnNext")).click();
-	    	Selenide.screenshot("1002.jpg");
+    	WebDriver webDriver = null;
+		try {
+			webDriver = (WebDriver) poolTargetSourceWebDriver.makeObject();
+//			WebDriverRunner.setWebDriver(webDriver);
+
+			logger.info(webDriver.toString());
+
+	    	String relCode = yahooProductBidInfoService.initLogin(webDriver, 0);
+    		Map<String, String> data = new HashMap<>();
+    		data.put("kind", relCode);
+	    	if ("2".equals(relCode)) {
+	    		data.put("id", webDriver.toString());
+	    		return AjaxResult.success(data);
+	    	}
+
+		} catch (Exception e) {
+			logger.error("Failed to get WebDriver from pool.", e);
+			return AjaxResult.error("Failed to get WebDriver");
+		} finally {
+	        try {
+				if (webDriver != null) poolTargetSourceWebDriver.releaseTarget(webDriver);
+			} catch (Exception e) {
+				logger.error("Failed to release web driver.", e);
+			}
 		}
 
-		System.out.println("pwdWrap isDisplayed:" + Selenide.$(By.id("pwdWrap")).isDisplayed());
-		System.out.println("pwdWrap Height:" + Selenide.$(By.id("pwdWrap")).getSize().getHeight());
+        return AjaxResult.success();
+    }
 
-		if (Selenide.$(By.id("pwdWrap")).isDisplayed()) {
+    @PreAuthorize("@ss.hasPermi('aucper:bid:query')")
+    @PostMapping(value = "/login/sms")
+    public AjaxResult doLoginSMS(@RequestBody Map<String, String> params) {
 
-			Selenide.$(By.id("passwd")).val("mj210213");
-	    	Selenide.screenshot("1003.jpg");
-//			Selenide.$(By.id("btnSubmit")).click();
-		} else if (Selenide.$(By.id("codeWrap")).isDisplayed()) {
+    	WebDriver webDriver = null;
+		try {
+	        List<Object> list = new ArrayList<>();
+			for (int i = 0; i < poolTargetSourceWebDriver.getIdleCount(); i++) {
+				WebDriver iwd = (WebDriver)poolTargetSourceWebDriver.getTarget();
+				if (iwd.toString().equals(params.get("wid"))) {
+					webDriver = iwd;
+					break;
+				} else {
+					list.add(iwd);
+				}
+			}
+	        for (Object o : list) {
+	        	poolTargetSourceWebDriver.releaseTarget(o);
+	        }
+	        list.clear();
+			WebDriverRunner.setWebDriver(webDriver);
+
 			// 認証コード
-			Selenide.$(By.id("code")).sendKeys("確認コード入力");
-	    	Selenide.screenshot("1004.jpg");
-//			Selenide.$(By.id("btnSubmit")).click();
-		} else {
+			yahooProductBidInfoService.loginSMS(params.get("smscd"));
 
-			Selenide.$(By.id("btnCodeSend")).click();
+		} catch (Exception e) {
+			logger.error("Failed to get WebDriver from pool.", e);
+			return AjaxResult.error("Failed to get WebDriver");
+		} finally {
+	        try {
+				if (webDriver != null) poolTargetSourceWebDriver.releaseTarget(webDriver);
+			} catch (Exception e) {
+				logger.error("Failed to release web driver.", e);
+			}
 		}
-
-
-    	Selenide.screenshot("1005.jpg");
-
-
 
         return AjaxResult.success();
     }

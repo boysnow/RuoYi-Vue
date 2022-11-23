@@ -27,6 +27,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
@@ -45,13 +48,9 @@ import com.ruoyi.aucper.yahooapi.dto.ExhibitInfoDTO;
 import com.ruoyi.selene.config.SeleneConifg;
 
 @Service
-public class YahooAPIService {
+public class YahooProductBidInfoService {
 
-    private static final Logger logger = LoggerFactory.getLogger(YahooAPIService.class);
-
-//	static {
-//		System.setProperty("selenide.headless", "true");
-//	}
+    private static final Logger logger = LoggerFactory.getLogger(YahooProductBidInfoService.class);
 
     @Autowired
     private YahooAuctionConifg config;
@@ -62,6 +61,11 @@ public class YahooAPIService {
     private TYahooAccountMapper tYahooAccountMapper;
     @Autowired
     private StatusService statusService;
+    @Autowired
+    private YahooBidService yahooBidService;
+
+    @Autowired
+    private PlatformTransactionManager txManager;
 
 	// 開始・終了時間
 	private static final String FMT_DATE_JSON = "yyyy-MM-dd HH:mm:ss";
@@ -76,12 +80,18 @@ public class YahooAPIService {
     @Async("webDriverTaskExecutor")
 	public void getExhibitInfoById(String id) {
 
+		DefaultTransactionDefinition def = null;
+		TransactionStatus status = null;
+
     	WebDriver webDriver = null;
     	try {
     		// Seleneが無効の場合、何もしない
     		if (SeleneConifg.isInvalidMode()) {
     			return;
     		}
+
+    		def = new DefaultTransactionDefinition();
+    		status = txManager.getTransaction(def);
 
     		webDriver = (WebDriver) poolTargetSourceWebDriver.getTarget();
     		WebDriverRunner.setWebDriver(webDriver);
@@ -111,7 +121,7 @@ public class YahooAPIService {
 
     			new SelenideWait(webDriver, 1000, 200).until(ExpectedConditions.javaScriptThrowsNoExceptions("return pageData;"));
         		Map<String, Map<String, String>> pageData = executeJavaScript("return pageData;");
-        		
+
     			Map<String, String> items = pageData.get("items");
 
     			// 商品（オークション）のタイトル
@@ -196,8 +206,8 @@ public class YahooAPIService {
 				if (StringUtils.isNotEmpty(statusStr) && statusStr.startsWith(BidStatus.closed.text)) {
 					exhibitInfoDTO.setStatus(BidStatus.closed.value);
 				}
-			} catch (Exception e) {
-				logger.debug(e.getMessage(), e);
+			} catch (Throwable th) {
+				logger.debug(th.getMessage(), th);
 			}
 
     		// Shopの場合、消費税を取得
@@ -219,8 +229,8 @@ public class YahooAPIService {
     		// 取得できなかった場合、ログインしてから再取得
     		if (!bidderResult) {
     			logger.info("ログインして最高額入札者を再取得する[" + id + "]");
-    			this.login(config.getAccountId(), config.getPassword());
-        		open(config.getBaseUrl() + id);
+//    			this.login(config.getAccountId(), config.getPassword());
+//        		open(config.getBaseUrl() + id);
         		this.getBidder(exhibitInfoDTO);
     		}
     		if (config.isDebug()) {
@@ -247,16 +257,21 @@ public class YahooAPIService {
     		System.out.println("---------------------");
     		System.out.println(exhibitInfoDTO.toString());
 
-
+    		// 処理成功の場合、後続非同期の自動落札処理でデータ取得する為、一旦コミット
     		this.updateTProductBidInfo(exhibitInfoDTO);
+    		txManager.commit(status);
+
+    		// 非同期の自動落札
+    		yahooBidService.runAutoBiding(id);
 
     		logger.info("@@@@@@@@ Get exhibit info by [" + id + "] - END");
 
     	} catch (Exception e1) {
+    		txManager.rollback(status);
     		logger.error("Failed to get exhibit info.[" + id + "]", e1);
     	} finally {
             try {
-				poolTargetSourceWebDriver.releaseTarget(webDriver);
+            	if (webDriver != null) poolTargetSourceWebDriver.releaseTarget(webDriver);
 			} catch (Exception e) {
 				logger.error("Failed to release web driver.", e);
 			}
@@ -336,59 +351,99 @@ public class YahooAPIService {
 		}
 	}
 
-	public void login(String userid, String password) {
+	/**
+	 *
+	 * @param userid
+	 * @param password
+	 * @return 0:ログイン成功 1:パスワード認証 2:コード認証 9:ログイン失敗
+	 */
+	public String login(String userid, String password) {
 
 		Selenide.open(config.getLoginUrl());
-		SelenideElement username = Selenide.$(By.id("username"));
 		String sysTime = com.ruoyi.common.utils.DateUtils.dateTimeNow();
 
-		logger.info("### login.[username displayed:{}]", username.isDisplayed());
+		/*
+		 * idWrap -> userid
+		 * pwdWrap -> password
+		 * codeWrap -> sms code
+		 * submitWrap -> login button
+		 *   btnSubmit -> do login
+		 *   btnCodeSend -> send sms code
+		 */
 
 		if (config.isDebug()) {
 			Selenide.screenshot(sysTime + "_01_ログイン-初期");
 		}
 
-		if (username.isDisplayed()) {
+		if (Selenide.$("#idWrap").isDisplayed()) {
 			if (config.isDebug()) {
 				Selenide.screenshot(sysTime + "_02_ログイン-ユーザID入力前");
 			}
-			username.val(userid);
-			Selenide.$(By.id("btnNext")).click();
+			Selenide.$(By.id("username")).val(userid);
 			if (config.isDebug()) {
 				Selenide.screenshot(sysTime + "_03_ログイン-ユーザID入力後");
 			}
+			Selenide.$(By.id("btnNext")).click();
+
+			// ボタン押下処理の待機
+			$("#submitWrap").shouldBe(Condition.visible);
 		}
 
 		if (config.isDebug()) {
-			Selenide.screenshot(sysTime + "_04_ログイン-PW入力前");
+			Selenide.screenshot(sysTime + "_04_ログイン-ユーザID入力後ボタン押下");
 		}
 		// PW認証
-		SelenideElement pwElement = Selenide.$(By.id("passwd"));
-		if (pwElement.isDisplayed()) {
-			pwElement.val(password);
-			Selenide.$(By.id("btnSubmit")).click();
+		if ($("#pwdWrap").isDisplayed()) {
+
 			if (config.isDebug()) {
-				Selenide.screenshot(sysTime + "_05_ログイン-PW入力後");
+				Selenide.screenshot(sysTime + "_05_ログイン-PW入力前");
 			}
-			return;
-		}
-		// 携帯認証
-		SelenideElement codeElement = Selenide.$(By.id("code"));
-		if (codeElement.isDisplayed()) {
-			codeElement.val("");
-
-
-
-			Selenide.$(By.id("btnSubmit")).click();
+			$("#passwd").val(password);
 			if (config.isDebug()) {
-				Selenide.screenshot(sysTime + "_05_ログイン-PW入力後");
+				Selenide.screenshot(sysTime + "_06_ログイン-PW入力後");
 			}
+			Selenide.$(By.id("btnSubmit")).click();
+			return "0";
 		}
+		// コード認証（コード入力）
+		else if ($("#codeWrap").isDisplayed()) {
 
+			return "2";
+
+		}
+		// コード認証（コード送信）
+		else if ($("#btnCodeSend").isDisplayed()) {
+			if (config.isDebug()) {
+				Selenide.screenshot(sysTime + "_07_ログイン-SMS送信前");
+			}
+			$("#btnCodeSend").click();
+			if (config.isDebug()) {
+				Selenide.screenshot(sysTime + "_08_ログイン-SMS送信後");
+			}
+			return "2";
+		} else {
+
+			return "9";
+
+		}
 
 	}
 
-	public void initLogin(WebDriver webDriver, int wdIndex) {
+	/**
+	 *
+	 * @param smscd
+	 * @return 0:ログイン成功 1:パスワード認証 2:コード認証 9:ログイン失敗
+	 */
+	public String loginSMS(String smscd) {
+
+		// 認証コード
+		Selenide.$(By.id("code")).sendKeys(smscd);
+		Selenide.$(By.id("btnSubmit")).click();
+
+		return "0";
+	}
+
+	public String initLogin(WebDriver webDriver, int wdIndex) {
 
 		logger.info("initialize yahoo login. [index=" + wdIndex + "] - START");
 
@@ -398,14 +453,18 @@ public class YahooAPIService {
 		cond.setDeleteFlag(false);
 		List<TYahooAccount> list = tYahooAccountMapper.selectTYahooAccountList(cond);
 		if (list.size() == 0) {
-			return;
+			return "9";
 		}
 
 		int index = wdIndex % list.size();
 		TYahooAccount account = list.get(index);
-		this.login(account.getYahooAccountId(), account.getPassword());
+		String rel = this.login(account.getYahooAccountId(), account.getPassword());
 
 		logger.info("initialize yahoo login. [index=" + wdIndex + "] - END");
+
+		return rel;
 	}
+
+
 
 }
