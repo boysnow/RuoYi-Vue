@@ -229,8 +229,8 @@ public class YahooProductBidInfoService {
     		// 取得できなかった場合、ログインしてから再取得
     		if (!bidderResult) {
     			logger.info("ログインして最高額入札者を再取得する[" + id + "]");
-//    			this.login(config.getAccountId(), config.getPassword());
-//        		open(config.getBaseUrl() + id);
+    			this.login(config.getAccountId(), config.getPassword());
+        		open(config.getBaseUrl() + id);
         		this.getBidder(exhibitInfoDTO);
     		}
     		if (config.isDebug()) {
@@ -458,6 +458,7 @@ public class YahooProductBidInfoService {
 
 		int index = wdIndex % list.size();
 		TYahooAccount account = list.get(index);
+//		String rel = this.login("aucper336", "makendev336");
 		String rel = this.login(account.getYahooAccountId(), account.getPassword());
 
 		logger.info("initialize yahoo login. [index=" + wdIndex + "] - END");

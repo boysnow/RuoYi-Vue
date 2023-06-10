@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.pool2.PooledObject;
 import org.openqa.selenium.WebDriver;
 import org.springframework.aop.target.CommonsPool2TargetSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -191,12 +192,6 @@ public class TProductBidInfoController extends BaseController
 
     	logger.info("Login 1st.");
 
-    	logger.info("ActiveCount=" + poolTargetSourceWebDriver.getActiveCount());
-    	logger.info("IdleCount=" + poolTargetSourceWebDriver.getIdleCount());
-    	logger.info("MaxIdle=" + poolTargetSourceWebDriver.getMaxIdle());
-    	logger.info("MaxSize=" + poolTargetSourceWebDriver.getMaxSize());
-    	logger.info("MinIdle=" + poolTargetSourceWebDriver.getMinIdle());
-
     	// check max size
     	int poolSize = poolTargetSourceWebDriver.getActiveCount() + poolTargetSourceWebDriver.getIdleCount();
     	if (poolSize >= SeleneConifg.getPoolMaxSize()) {
@@ -204,11 +199,31 @@ public class TProductBidInfoController extends BaseController
     	}
 
     	WebDriver webDriver = null;
+    	PooledObject<Object> po = null;
 		try {
-			webDriver = (WebDriver) poolTargetSourceWebDriver.makeObject();
+			webDriver = (WebDriver) poolTargetSourceWebDriver.getTarget();
+			
+//			po = poolTargetSourceWebDriver.makeObject();
+//			webDriver = (WebDriver) po.getObject();
+			
+//			List<WebDriver> list = new ArrayList<>();
+//			for (int i = 0; i < poolTargetSourceWebDriver.getIdleCount(); i++) {
+//				webDriver = (WebDriver) poolTargetSourceWebDriver.getTarget();
+//				if (config.getBaseUrl().equals(webDriver.getCurrentUrl())) {
+//					
+//				}
+//			}
+			
 //			WebDriverRunner.setWebDriver(webDriver);
+//			webDriver.getCurrentUrl()
 
-			logger.info(webDriver.toString());
+			logger.info("webDriver:{}, CurrentUrl={}", webDriver.toString());
+
+	    	logger.info("ActiveCount=" + poolTargetSourceWebDriver.getActiveCount());
+	    	logger.info("IdleCount=" + poolTargetSourceWebDriver.getIdleCount());
+	    	logger.info("MaxIdle=" + poolTargetSourceWebDriver.getMaxIdle());
+	    	logger.info("MaxSize=" + poolTargetSourceWebDriver.getMaxSize());
+	    	logger.info("MinIdle=" + poolTargetSourceWebDriver.getMinIdle());
 
 	    	String relCode = yahooProductBidInfoService.initLogin(webDriver, 0);
     		Map<String, String> data = new HashMap<>();
@@ -223,7 +238,10 @@ public class TProductBidInfoController extends BaseController
 			return AjaxResult.error("Failed to get WebDriver");
 		} finally {
 	        try {
-				if (webDriver != null) poolTargetSourceWebDriver.releaseTarget(webDriver);
+	        	if (webDriver != null) poolTargetSourceWebDriver.releaseTarget(webDriver);
+//				if (webDriver != null && poolTargetSourceWebDriver.validateObject(po)) {
+//					poolTargetSourceWebDriver.releaseTarget(webDriver);
+//				}
 			} catch (Exception e) {
 				logger.error("Failed to release web driver.", e);
 			}

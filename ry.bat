@@ -29,6 +29,7 @@ PAUSE
 		set pid=%%a
 		set image_name=%%b
 	)
+	echo %pid%
 	if  defined pid (
 		echo %%is running
 		PAUSE

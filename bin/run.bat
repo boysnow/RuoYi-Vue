@@ -5,6 +5,7 @@ echo.
 
 rem set JAVA_HOME=C:\pleiades\java\8
 set path=%path%;C:\pleiades\java\8\bin
+set path=%path%;C:\git\RuoYi-Vue\ruoyi-aucper\src\main\resources
 
 cd %~dp0
 cd ../ruoyi-admin/target
