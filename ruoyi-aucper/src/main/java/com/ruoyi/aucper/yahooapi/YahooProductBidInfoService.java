@@ -202,7 +202,7 @@ public class YahooProductBidInfoService {
 			// 状態
 			exhibitInfoDTO.setStatus(BidStatus.open.value);
 			try {
-				String statusStr = $(".Count__count--sideLine .Count__number").shouldBe(Condition.visible, Duration.ofMillis(500)).getText();
+				String statusStr = $(".Count__count .Count__endDate").parent().getText();
 				if (StringUtils.isNotEmpty(statusStr) && statusStr.startsWith(BidStatus.closed.text)) {
 					exhibitInfoDTO.setStatus(BidStatus.closed.value);
 				}
