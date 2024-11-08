@@ -25,6 +25,7 @@ public class WebDriverObjectPool extends CommonsPool2TargetSource {
 
     public void initializeObjects() throws Exception {
 
+    	System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
     	// Selene使用可否チェック
     	if (SeleneConifg.isInvalidMode()) {
     		return;
