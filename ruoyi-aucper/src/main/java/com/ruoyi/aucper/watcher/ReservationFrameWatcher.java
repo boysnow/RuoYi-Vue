@@ -1,5 +1,6 @@
 package com.ruoyi.aucper.watcher;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,9 +45,14 @@ public class ReservationFrameWatcher {
 	private static final String URL_NAKANO = "https://www.31sumai.com/attend/X1514/";
 	
 	private static final String URL_TOYOMI = "https://www.31sumai.com/attend/X1919/";
+
+	
+	// プラウドタワー池袋
+	private static final String URL_PROUD_IKEBUKURO = "https://www.proud-web.jp/module/reservation?id=A992";
 	
 	
 	private static final String NOT_ACCEPTED = "来場予約を受け付けておりません";
+	private static final String NOT_RESERVATION = "予約枠無";
 
 	private static final String MSG_FMT = "%s　予約可能：%s日";
 
@@ -154,7 +160,7 @@ public class ReservationFrameWatcher {
         	}
         	if (!existFlag) {
 //            	msg = msg + "予約枠なし" + System.lineSeparator();
-            	msg = msg + "予約枠なし" + "<br/>";
+            	msg = msg + NOT_RESERVATION + "<br/>";
         	}
 
         	if (existFlag || always) {
@@ -175,6 +181,104 @@ public class ReservationFrameWatcher {
 				logger.error("Failed to release web driver.", e);
 			}
 		}
+    }
+
+    /**
+     * Watching野村不動産Proudの予約枠
+     */
+    public void watchProud(String params, Boolean always) {
+
+    	WebDriver webDriver = null;
+    	try {
+    		webDriver = (WebDriver) poolTargetSourceWebDriver.getTarget();
+
+    		/**
+    		 * 上記でプールからWebDriverオブジェクトを取得する為に時間が要する為
+    		 * 開始ログや更新処理などをここ以降に実装する
+    		 */
+    		WebDriverRunner.setWebDriver(webDriver);
+    		logger.info("@@@@@@@@ watching Proud - START [{}, {}]", params, always);
+    		logger.info("### use webdriver:{}", webDriver.toString());
+
+    		if (StringUtils.isEmpty(params)) {
+        		logger.info("@@@@@@@@ watching Proud - END[not parameter]");
+    			return;
+    		}
+        	always = always ? true : false;
+    		String url = null;
+        	String msg = "";
+
+    		switch(params) {
+    		case "proud-ikebukuro":
+    			url = URL_PROUD_IKEBUKURO;
+    			msg = "【ProudTower池袋】";
+    			break;
+    		}
+            if (StringUtils.isEmpty(url)) {
+        		logger.info("@@@@@@@@ watching Proud - END[not supported:{}]", params);
+    			return;
+            }
+        	
+
+    		// 予約画面
+        	Selenide.open(url);
+
+        	WebElement dataTable = Selenide.$(By.cssSelector("table.day-select-tbl"));
+
+    		String sysTime = com.ruoyi.common.utils.DateUtils.dateTimeNow();
+
+        	if (!dataTable.isDisplayed()) {
+        		logger.info("@@@@@@@@ watching Proud - END[not accepted]");
+    			return;
+    		}
+
+
+        	boolean existFlag = false;
+        	msg = msg + "<br/>";
+        	int count = 0;
+        	
+
+    		// 予約可能枠を取得
+        	List<WebElement> days = dataTable.findElements(By.cssSelector("tr"));
+        	for (WebElement day : days) {
+        		List<WebElement> reservableTimes = day.findElements(By.cssSelector("td.ok"));
+        		if (reservableTimes.size() == 0) {
+        			continue;
+        		}
+        		// 予約可能の日がある場合
+        		boolean reservable = reservableTimes.stream().allMatch(e -> e.isDisplayed());
+        		if (reservable) {
+        			count++;
+        		}
+        	}
+        	
+        	if (count > 0) {
+        		existFlag = true;
+            	msg = msg + String.format(MSG_FMT, "直近", count) + "<br/>";
+        	}
+        	
+        	if (!existFlag) {
+            	msg = msg + NOT_RESERVATION + "<br/>";
+        	}
+
+        	if (existFlag || always) {
+        		msg = msg + String.format("<a target='_blank' href='%s'>予約サイト</a>", url);
+        		this.sendMsg(msg, url);
+        	}
+        	
+
+    		logger.info("@@@@@@@@ watching Proud - END");
+
+    	} catch (Exception e) {
+    		logger.error("Failed to watching Proud", e);
+    	} finally {
+            try {
+				poolTargetSourceWebDriver.releaseTarget(webDriver);
+			} catch (Exception e) {
+				logger.error("Failed to release web driver.", e);
+			}
+		}
+    	
     }
 
     public void sendMsg(String msg, String url) {
